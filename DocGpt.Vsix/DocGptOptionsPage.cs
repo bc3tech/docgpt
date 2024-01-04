@@ -14,6 +14,9 @@
     [Guid("D2FB7185-E45E-4761-AA8D-85A5CF91D803")]
     public class DocGptOptionsPage : DialogPage
     {
+        public const string CategoryName = "Doc GPT";
+        public const string PageName = "General";
+
         private readonly DocGptOptions _options = DocGptOptions.Instance;
 
         /// <summary>

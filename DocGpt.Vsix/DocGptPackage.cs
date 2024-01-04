@@ -5,6 +5,7 @@
     using System.Threading;
 
     using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
 
     using Task = System.Threading.Tasks.Task;
 
@@ -26,7 +27,9 @@
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [ProvideOptionPage(typeof(DocGptOptionsPage), "Doc GPT", "General", 0, 0, true)]
+    [ProvideOptionPage(typeof(DocGptOptionsPage), DocGptOptionsPage.CategoryName, DocGptOptionsPage.PageName, 0, 0, true)]
+    [ProvideAutoLoad(UIContextGuids.SolutionHasSingleProject, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(UIContextGuids.SolutionHasMultipleProjects, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(DocGptPackage.PackageGuidString)]
     public sealed class DocGptPackage : AsyncPackage
     {
@@ -60,6 +63,8 @@
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            this.GetDialogPage(typeof(DocGptOptionsPage));
         }
 
         #endregion

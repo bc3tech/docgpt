@@ -6,6 +6,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using DocGpt.Options;
+
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
@@ -46,6 +48,12 @@
         /// <returns>A Task.</returns>
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
+            if (DocGptOptions.Instance.Endpoint is null
+                || string.IsNullOrWhiteSpace(DocGptOptions.Instance.Endpoint.OriginalString))
+            {
+                return;
+            }
+
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
             var diagnostic = context.Diagnostics.FirstOrDefault(i => this.FixableDiagnosticIds.Contains(i.Id));
@@ -60,18 +68,20 @@
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().First();
 
             // Register a code action that will invoke the fix.
-            context.RegisterCodeFix(
-                CodeAction.Create(
-                    title: CodeFixResources.CodeFixTitle,
-                    createChangedDocument: c => AddXmlDocumentationViaGptAsync(context.Document, declaration, c),
-                    equivalenceKey: nameof(CodeFixResources.CodeFixTitle)),
-                diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(
+                title: CodeFixResources.CodeFixTitle,
+                createChangedDocument: c => AddXmlDocumentationViaGptAsync(context.Document, declaration, c),
+                equivalenceKey: nameof(CodeFixResources.CodeFixTitle)),
+            diagnostic);
         }
 
 #pragma warning disable IDE0060 // Remove unused parameter
         private async Task<Document> AddXmlDocumentationViaGptAsync(Document document, TypeDeclarationSyntax typeDecl, CancellationToken cancellationToken)
 #pragma warning restore IDE0060 // Remove unused parameter
         {
+            var options = DocGptOptions.Instance;
+            var client = DocGptOptions.Instance.GetClient();
+
             return await Task.FromResult(document);
         }
     }
