@@ -4,7 +4,7 @@ A Visual Studio extension to quickly and easily document your code using LLMs.
 
 ## Installation
 
-- Install the extension from the Visual Studio Marketplace or from within Visual Studio's extension manager
+- Install the extension **free** from [the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=bc3tech.net-bc3tech-docgpt) or from within Visual Studio's extension manager
 - Set up the endpoint for your OpenAI model in the extension's settings
   ![VS Options panel for Doc GPT](docs/img/options_panel.png)
 
