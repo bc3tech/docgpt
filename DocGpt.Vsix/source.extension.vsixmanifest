@@ -5,6 +5,7 @@
         <DisplayName>Doc GPT</DisplayName>
         <Description xml:space="preserve">Adds XML Documentation derived from an OpenAI GPT endpoint to .NET members. Can be used with either Azure OpenAI service or OpenAI.org account.</Description>
         <MoreInfo>https://github.com/brandonh-msft/DocGpt</MoreInfo>
+        <Icon>icon.jpg</Icon>
         <Tags>dotnet, gpt, llm, ai, xmldoc, xml, documentation</Tags>
         <Preview>true</Preview>
     </Metadata>
@@ -21,7 +22,7 @@
     </Prerequisites>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-        <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="DocGpt.CodeFixes" Path="|DocGpt.CodeFixes|" />
-        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="DocGpt.CodeFixes" Path="|DocGpt.CodeFixes|" />
+        <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="DocGpt.Roslyn" Path="|DocGpt.Roslyn|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="DocGpt.Roslyn" Path="|DocGpt.Roslyn|" />
     </Assets>
 </PackageManifest>

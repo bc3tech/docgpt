@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DocGpt.CodeFixes\DocGpt.CodeFixes.csproj" />
+    <ProjectReference Include="..\DocGpt.Roslyn\DocGpt.Roslyn.csproj" />
   </ItemGroup>
 
 </Project>
