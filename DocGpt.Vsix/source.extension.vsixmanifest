@@ -4,6 +4,7 @@
         <Identity Id="DocGPT.b5edf920-0ac9-4255-9182-ed263a6e9b18" Version="0.1" Language="en-US" Publisher="Brandon🌩H" />
         <DisplayName>Doc GPT</DisplayName>
         <Description xml:space="preserve">Adds XML Documentation derived from an OpenAI GPT endpoint to .NET members. Can be used with either Azure OpenAI service or OpenAI.org account.</Description>
+        <MoreInfo>https://github.com/brandonh-msft/DocGpt</MoreInfo>
         <Tags>dotnet, gpt, llm, ai, xmldoc, xml, documentation</Tags>
         <Preview>true</Preview>
     </Metadata>
