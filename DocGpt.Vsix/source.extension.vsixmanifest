@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="VSIXProject1.b5edf920-0ac9-4255-9182-ed263a6e9b18" Version="0.1" Language="en-US" Publisher="Brandon🌩Hurlburt" />
+        <Identity Id="DocGPT.b5edf920-0ac9-4255-9182-ed263a6e9b18" Version="0.1" Language="en-US" Publisher="Brandon🌩H" />
         <DisplayName>Doc GPT</DisplayName>
-        <Description xml:space="preserve">Adds XML Documentation derived from an OpenAI GPT endpoint to .NET members</Description>
+        <Description xml:space="preserve">Adds XML Documentation derived from an OpenAI GPT endpoint to .NET members. Can be used with either Azure OpenAI service or OpenAI.org account.</Description>
         <Tags>dotnet, gpt, llm, ai, xmldoc, xml, documentation</Tags>
         <Preview>true</Preview>
     </Metadata>
@@ -20,7 +20,6 @@
     </Prerequisites>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-        <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="DocGpt" Path="|DocGpt|" />
         <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="DocGpt.CodeFixes" Path="|DocGpt.CodeFixes|" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="DocGpt.CodeFixes" Path="|DocGpt.CodeFixes|" />
     </Assets>

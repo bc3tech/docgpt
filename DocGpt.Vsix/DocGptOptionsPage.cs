@@ -25,7 +25,7 @@
         [Category("OpenAI Configuration")]
         [DisplayName("Endpoint URL")]
         [Description("The OpenAI or Azure OpenAI endpoint url.")]
-        public Uri Endpoint { get => _options.Endpoint; set => _options.Endpoint = value; }
+        public string Endpoint { get => _options.Endpoint?.OriginalString; set => _options.Endpoint = Uri.TryCreate(value, UriKind.Absolute, out var r) ? r : null; }
 
         /// <summary>
         /// Gets or Sets the api key.

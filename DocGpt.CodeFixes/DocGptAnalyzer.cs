@@ -1,9 +1,11 @@
 ﻿namespace DocGpt
 {
     using System.Collections.Immutable;
+    using System.Linq;
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
 
     /// <summary>
@@ -14,11 +16,11 @@
     {
         public const string DiagnosticId = "DGPT001";
 
-        // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
+        // You can change these strings in the AnalyzerResources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Localizing%20Analyzers.md for more on localization
-        private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
-        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
-        private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager, typeof(Resources));
+        private static readonly LocalizableString Title = new LocalizableResourceString(nameof(AnalyzerResources.AnalyzerTitle), AnalyzerResources.ResourceManager, typeof(AnalyzerResources));
+        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(AnalyzerResources.AnalyzerMessageFormat), AnalyzerResources.ResourceManager, typeof(AnalyzerResources));
+        private static readonly LocalizableString Description = new LocalizableResourceString(nameof(AnalyzerResources.AnalyzerDescription), AnalyzerResources.ResourceManager, typeof(AnalyzerResources));
         private const string Category = "Documentation";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
@@ -39,12 +41,38 @@
 
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ClassDeclaration);
+            var memberDeclarationKinds = new[] {
+                SyntaxKind.ClassDeclaration,
+                SyntaxKind.StructDeclaration,
+                SyntaxKind.InterfaceDeclaration,
+                SyntaxKind.EnumDeclaration,
+                SyntaxKind.DelegateDeclaration,
+                SyntaxKind.FieldDeclaration,
+                SyntaxKind.PropertyDeclaration,
+                SyntaxKind.EventDeclaration,
+                SyntaxKind.MethodDeclaration,
+                SyntaxKind.ConstructorDeclaration,
+                SyntaxKind.DestructorDeclaration,
+                SyntaxKind.IndexerDeclaration,
+                SyntaxKind.RecordDeclaration,
+                SyntaxKind.RecordStructDeclaration,
+                SyntaxKind.EnumMemberDeclaration,
+                // Add other member types if needed
+            };
+
+            foreach (var k in memberDeclarationKinds)
+            {
+                context.RegisterSyntaxNodeAction(AnalyzeNode, k);
+            }
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             var node = context.Node;
+            //if (context.Node is PropertyDeclarationSyntax s && IsAutoProperty(s))
+            //{
+            //    return;
+            //}
 
             // Check if the node has leading trivia (which is where the XML documentation would be)
             if (node.HasLeadingTrivia)
@@ -65,8 +93,15 @@
             // If this point is reached, then no XML documentation was found
             // Create and report the diagnostic for missing XML documentation
             var symbol = context.SemanticModel.GetDeclaredSymbol(node);
-            var diagnostic = Diagnostic.Create(Rule, symbol.Locations[0], symbol.Name);
+            var diagnostic = Diagnostic.Create(Rule, symbol.Locations[0], node.Kind(), symbol.Name);
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool IsAutoProperty(PropertyDeclarationSyntax property)
+        {
+            // An auto-property will have at least one accessor with no body
+            return property.AccessorList != null &&
+                   property.AccessorList.Accessors.Any(a => a.Body == null && a.ExpressionBody == null);
         }
     }
 }
