@@ -98,9 +98,16 @@ You are to give back only the XML documentation wrapped in a code block (```), d
                     // return a document with the new syntax root
                     document = document.WithSyntaxRoot(Formatter.Format(newRoot, document.Project.Solution.Workspace));
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    //Debugger.Break();
+#if DEBUG
+                    if (!(e is TaskCanceledException) && !(e is OperationCanceledException))
+                    {
+                        System.Diagnostics.Debugger.Break();
+                    }
+#else
+                    throw;
+#endif
                 }
             }
 
