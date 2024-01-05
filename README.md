@@ -30,7 +30,7 @@ The deployment name is found in your Deployment list in Azure AI Studio:
 
 ## Usage
 
-The extension ships with two main components:
+The extension ships with the following components:
 
 1. Analyzer which finds undocumented members
 1. Code fix which generates documentation for the member
@@ -40,15 +40,15 @@ The analyzer details can be found in the [Shipped](DocGpt.CodeFixes/AnalyzerRele
 
 The code fix also reacts to the built-in XML Documentation diagnostic ([CS1591](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591))
 
-> Note: If you'd rather not have the diagnostic fire, you can disable it in your editorconfig, global suppression file, or inline. Then, you can use the refactor (will only fix a single member at a time) to generate documentation.
+> Note: If you'd rather not have the diagnostic fire, you can disable it in your .editorconfig, global suppression file, or inline. Then, you can use the refactor (will only fix a single member at a time) to generate documentation.
 
 ![DEMO](docs/img/demo.gif) ([demo video](docs/img/demo.mp4))
 
 ## Notes
 
-Sending code to GPT can *very* quickly run into token throttling based on endpoint/account configurations. Additionally, please be conscious of the fact that you are very often charged **per token** sent to the API. Sending large code files to the API can quickly run up a large bill.
+Sending code to GPT can *very* quickly run into token throttling based on endpoint/account configurations. Additionally, please be conscious of the fact that you are charged **per token** sent to the API. Sending large code files to the API can quickly run up a large bill.
 
-Using the code fixer in a "fix all" scenario results in numerous back-to-back calls to the GPT endpoint. This can request-based throttling. If you encounter this, please try again in a few minutes.
+Using the code fixer in a "fix all" scenario results in numerous back-to-back calls to the defined endpoint. This can result in request-based throttling. If you encounter this, please try again in a few minutes.
 
 ## FAQ
 
