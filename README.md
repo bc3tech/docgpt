@@ -8,8 +8,6 @@ A Visual Studio extension to quickly and easily document your code using LLMs.
 - Set up the endpoint for your OpenAI model in the extension's settings
   ![VS Options panel for Doc GPT](docs/img/options_panel.png)
 
-> Note: The model name is only used in the case of Azure OpenAI deployments. If you're using an account on OpenAI.org, you can leave this blank.
-
 ## Usage
 
 The extension ships with two main components:
