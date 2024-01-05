@@ -39,28 +39,7 @@
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
-            // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
-            // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-            var memberDeclarationKinds = new[] {
-                SyntaxKind.ClassDeclaration,
-                SyntaxKind.StructDeclaration,
-                SyntaxKind.InterfaceDeclaration,
-                SyntaxKind.EnumDeclaration,
-                SyntaxKind.DelegateDeclaration,
-                SyntaxKind.FieldDeclaration,
-                SyntaxKind.PropertyDeclaration,
-                SyntaxKind.EventDeclaration,
-                SyntaxKind.MethodDeclaration,
-                SyntaxKind.ConstructorDeclaration,
-                SyntaxKind.DestructorDeclaration,
-                SyntaxKind.IndexerDeclaration,
-                SyntaxKind.RecordDeclaration,
-                SyntaxKind.RecordStructDeclaration,
-                SyntaxKind.EnumMemberDeclaration,
-                // Add other member types if needed
-            };
-
-            foreach (var k in memberDeclarationKinds)
+            foreach (SyntaxKind k in DocGptExecutor.SupportedSyntaxes)
             {
                 context.RegisterSyntaxNodeAction(AnalyzeNode, k);
             }
@@ -68,7 +47,7 @@
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var node = context.Node;
+            SyntaxNode node = context.Node;
             //if (context.Node is PropertyDeclarationSyntax s && IsAutoProperty(s))
             //{
             //    return;
@@ -78,7 +57,7 @@
             if (node.HasLeadingTrivia)
             {
                 // Go through each piece of trivia leading the node
-                foreach (var trivia in node.GetLeadingTrivia())
+                foreach (SyntaxTrivia trivia in node.GetLeadingTrivia())
                 {
                     // Check if the trivia is of kind 'DocumentationCommentTrivia'
                     if (trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia) ||
@@ -92,8 +71,8 @@
 
             // If this point is reached, then no XML documentation was found
             // Create and report the diagnostic for missing XML documentation
-            var symbol = context.SemanticModel.GetDeclaredSymbol(node);
-            var diagnostic = Diagnostic.Create(Rule, symbol.Locations[0], node.Kind(), symbol.Name);
+            ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(node);
+            Diagnostic diagnostic = Diagnostic.Create(Rule, symbol.Locations[0], node.Kind(), symbol.Name);
             context.ReportDiagnostic(diagnostic);
         }
 

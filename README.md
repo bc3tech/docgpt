@@ -16,10 +16,13 @@ The extension ships with two main components:
 
 1. Analyzer which finds undocumented members
 1. Code fix which generates documentation for the member
+1. Code refactor which can be used instead of fixer/analyzer; disable the diagnostic, and you can use the refactor as-needed
 
 The analyzer details can be found in the [Shipped](DocGpt.CodeFixes/AnalyzerReleases.Shipped.md)/[Unshipped](DocGpt.CodeFixes/AnalyzerReleases.Unshipped.md) documentation.
 
 The code fix also reacts to the built-in XML Documentation diagnostic ([CS1591](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591))
+
+> Note: If you'd rather not have the diagnostic fire, you can disable it in your editorconfig, global suppression file, or inline. Then, you can use the refactor (will only fix a single member at a time) to generate documentation.
 
 ![DEMO](docs/img/demo.gif) ([demo video](docs/img/demo.mp4))
 
