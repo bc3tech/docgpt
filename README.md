@@ -5,8 +5,28 @@ A Visual Studio extension to quickly and easily document your code using LLMs.
 ## Installation
 
 - Install the extension **free** from [the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=bc3tech.net-bc3tech-docgpt) or from within Visual Studio's extension manager
+
+## Configuration
 - Set up the endpoint for your OpenAI model in the extension's settings
   ![VS Options panel for Doc GPT](docs/img/options_panel.png)
+
+### OpenAI.com
+
+You can obtain access to use OpenAI's APIs by [creating a free account]().
+> Note: The [free tier of API usage](https://platform.openai.com/docs/guides/rate-limits/usage-tiers) has a limited number of tokens per day which are likely to not meet the needs of this extension. If you start seeing large delays in responses or no responses altogether, you can [upgrade your account](https://openai.com/pricing).
+
+- The endpoint URL for an OpenAI deployment is `https://api.openai.com`
+- An API key can be created in your [OpenAI dashboard](https://platform.openai.com/api-keys) - be sure to save it as it will only be shown once!
+- To find out which name to put in the model name field, you can use the [OpenAI Playground](https://platform.openai.com/playground?mode=chat) to find the name of the model you want to use:
+![OpenAI model list in the Chat Playground](docs/img/openai_model_list.png)
+
+### Azure OpenAI
+
+Your endpoint URL and key can be found in the details of your OpenAI resource in Azure:
+![Resource Endpoint/Key details in Azure](docs/img/azure_details.png)
+
+The deployment name is found in your Deployment list in Azure AI Studio:
+![Deployment list in Azure AI Studio](docs/img/azure_deployment_list.png)
 
 ## Usage
 
