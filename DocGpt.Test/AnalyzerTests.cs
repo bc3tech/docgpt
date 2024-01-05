@@ -5,7 +5,7 @@
     using Microsoft.CodeAnalysis.Testing;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using VerifyCS = DocGpt.Test.CSharpAnalyzerVerifier<DocGpt.DocGptAnalyzer>;
+    using VerifyCS = CSharpAnalyzerVerifier<DocGptAnalyzer>;
 
     /// <summary>
     /// The doc gpt unit test.

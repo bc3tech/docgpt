@@ -12,6 +12,8 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Formatting;
 
+    using static Helpers;
+
     /// <summary>
     /// An internal static class which hosts methods to add XML documentation to a provided Document using GPT service.
     /// </summary>
@@ -62,14 +64,18 @@
 
             if (node != null)
             {
+                if (HasOverrideModifier(node))
+                {
+                    return await DecorateWithInheritDocAsync(node, document, cancellationToken);
+                }
+
                 // Get the body of the method
                 string code = node.GetText().ToString();
 
                 completionOptions.Messages.Add(new ChatRequestUserMessage($@"You are to take the C# code below and create a valid XML Documentation summary block for it according to .NET specifications. Use the following steps to determine what you compute for the answer:
 
 1. If the given code is not a complete C# type or member declaration, stop computing and return nothing.
-2. If the member is an `override` or an implementation of an interface member, stop computing and return `/// <inheritdoc />`
-3. If you're not able to discern the purpose of the code with reasonable certainty, return `/// <summary />`
+2. If you're not able to discern the purpose of the code with reasonable certainty, just return `/// <summary />`
 
 ```csharp
 {code}

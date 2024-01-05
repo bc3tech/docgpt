@@ -9,7 +9,6 @@
     using DocGpt.Options;
 
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeRefactorings;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -41,10 +40,7 @@
             }
 
             // Register a code action that will invoke the fix.
-            context.RegisterRefactoring(CodeAction.Create(
-                title: CodeFixResources.CodeFixTitle,
-                createChangedDocument: c => DocGptExecutor.AddXmlDocumentationViaGptAsync(context.Document, node.GetLocation(), c),
-                equivalenceKey: nameof(CodeFixResources.CodeFixTitle)));
+            context.RegisterRefactoring(new DocGptCodeAction(context.Document, node.GetLocation()));
         }
     }
 }
