@@ -8,7 +8,7 @@
         <License>LICENSE</License>
         <GettingStartedGuide>README.md</GettingStartedGuide>
         <Icon>icon.jpg</Icon>
-        <Tags>dotnet, gpt, llm, ai, xmldoc, xml, documentation</Tags>
+        <Tags>dotnet, gpt, llm, ai, xmldoc, xml, documentation, openai, azure</Tags>
         <Preview>true</Preview>
     </Metadata>
     <Installation>
