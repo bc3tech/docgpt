@@ -46,14 +46,14 @@
 		<ErrorReport>prompt</ErrorReport>
 		<WarningLevel>4</WarningLevel>
 	</PropertyGroup>
-	<PropertyGroup>
+	<!--<PropertyGroup>
 		<VsixSignTool>$(NuGetPackageRoot)Microsoft.VSSDK.Vsixsigntool\16.2.29116.78\tools\vssdk\vsixsigntool.exe</VsixSignTool>
 		<VsixSignCommand>$(VsixSignTool) sign /f signing_cert.pfx /p "$(DOCGPT_SIGN_PASSWORD)" /fd sha256</VsixSignCommand>
 	</PropertyGroup>
 	<Target Name="SignVsix" AfterTargets="CreateVsixContainer" Condition="Exists('$(MSBuildProjectDirectory)\signing_cert.pfx') And '$(Configuration)' == 'Release' And '$(DOCGPT_SIGN_PASSWORD)' != ''">
 		<Message Text="Signing $(TargetVsixContainer)" Importance="high" />
 		<Exec Command="$(VsixSignCommand) $(MSBuildProjectDirectory)\$(TargetVsixContainer)" />
-	</Target>
+	</Target>-->
 	<ItemGroup>
 		<Compile Include="DocGptOptionsPage.cs" />
 		<Compile Include="DocGptPackage.cs" />
