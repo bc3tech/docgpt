@@ -36,7 +36,7 @@ The extension ships with the following components:
 1. Code fix which generates documentation for the member
 1. Code refactor which can be used instead of fixer/analyzer; disable the diagnostic, and you can use the refactor as-needed
 
-The analyzer details can be found in the [Shipped](DocGpt.CodeFixes/AnalyzerReleases.Shipped.md)/[Unshipped](DocGpt.CodeFixes/AnalyzerReleases.Unshipped.md) documentation.
+The analyzer details can be found in the [Shipped](DocGpt.Roslyn/AnalyzerReleases.Shipped.md)/[Unshipped](DocGpt.Roslyn/AnalyzerReleases.Unshipped.md) documentation.
 
 The code fix also reacts to the built-in XML Documentation diagnostic ([CS1591](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591))
 

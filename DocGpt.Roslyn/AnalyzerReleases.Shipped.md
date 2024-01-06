@@ -5,4 +5,4 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-DGPT001 | Documentation | Warning | DocGptAnalyzer
+DGPT001 | Documentation | Warning | Fires on any .NET member or type that lacks XML documentation comments.
