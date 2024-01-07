@@ -48,7 +48,7 @@
         }
 
         /// <inheritdoc />
-        protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) => DocGptExecutor.AddXmlDocumentationViaGptAsync(_doc, _location, cancellationToken);
+        protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) => DocGptExecutor.AddXmlDocumentationAsync(_doc, _location, cancellationToken);
 
         /// <summary>
         /// Represents an operation that sends the entire member's definition to the defined OpenAI endpoint for summary text generation and applies the result.

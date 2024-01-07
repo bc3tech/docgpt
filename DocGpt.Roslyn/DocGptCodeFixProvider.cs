@@ -9,6 +9,7 @@
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CodeFixes;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// The doc gpt code fix provider.
@@ -60,6 +61,19 @@
             }
 
             Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+
+            SyntaxNode node = root.FindNode(diagnosticSpan);
+            if (node is VariableDeclaratorSyntax v)
+            {
+                if (node.Parent?.Parent is FieldDeclarationSyntax f)
+                {
+                    node = f;
+                }
+                else
+                {
+                    return;
+                }
+            }
 
             string code = root.GetText().GetSubText(diagnosticSpan).ToString();
 

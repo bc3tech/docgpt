@@ -6,11 +6,16 @@
     using Azure.AI.OpenAI;
 
     /// <summary>
-    /// The page.
+    /// Represents the configuration options for an OpenAI or Azure-based OpenAI service.
+    /// This includes properties required for connection such as the endpoint URL and API key.
+    /// It also includes the name of the model or deployment to use.
     /// </summary>
-    public class DocGptOptions
+    internal class DocGptOptions
     {
         public static readonly DocGptOptions Instance = new DocGptOptions();
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocGptOptions"/> class.
+        /// </summary>
         protected DocGptOptions() { }
 
         /// <summary>
@@ -30,8 +35,11 @@
         }
 
         /// <summary>
-        /// Gets or Sets the api key.
+        /// Gets or sets the OpenAI or Azure OpenAI API key. Changing the value of this property will reset the underlying client.
         /// </summary>
+        /// <value>
+        /// The API key.
+        /// </value>
         [Category("OpenAI Configuration")]
         [DisplayName("API Key")]
         [Description("The OpenAI or Azure OpenAI API Key.")]
@@ -46,8 +54,11 @@
         }
 
         /// <summary>
-        /// Gets or Sets the model deployment name.
+        /// Gets or sets the OpenAI or Azure OpenAI API model or deployment name.
         /// </summary>
+        /// <value>
+        /// The OpenAI or Azure OpenAI API model or deployment name.
+        /// </value>
         [Category("OpenAI Configuration")]
         [DisplayName("Model/Deployment Name")]
         [Description("The OpenAI or Azure OpenAI API model or deployment name.")]
@@ -58,9 +69,9 @@
         private Uri _endpoint;
 
         /// <summary>
-        /// Gets the client.
+        /// Gets an instance of the OpenAIClient. If the client instance is null, it creates a new instance 
+        /// based on whether the host endpoint ends with "azure.com" or not, using the provided API key.
         /// </summary>
-        /// <returns>An OpenAIClient.</returns>
         public OpenAIClient GetClient()
         {
             if (_client is null)

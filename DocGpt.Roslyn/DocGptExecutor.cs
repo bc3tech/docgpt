@@ -10,6 +10,7 @@
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Formatting;
 
     using static Helpers;
@@ -30,7 +31,6 @@
                 SyntaxKind.EventDeclaration,
                 SyntaxKind.MethodDeclaration,
                 SyntaxKind.ConstructorDeclaration,
-                SyntaxKind.DestructorDeclaration,
                 SyntaxKind.IndexerDeclaration,
                 SyntaxKind.RecordDeclaration,
                 SyntaxKind.RecordStructDeclaration,
@@ -46,7 +46,7 @@
         /// <param name="diagnostic">The diagnostic information used to generate the XML documentation.</param>
         /// <param name="cancellationToken">A cancellation token for the operation.</param>
         /// <returns>A Task returning a Document with the new XML documentation added.</returns>
-        public static async Task<Document> AddXmlDocumentationViaGptAsync(Document document, Location location, CancellationToken cancellationToken)
+        public static async Task<Document> AddXmlDocumentationAsync(Document document, Location location, CancellationToken cancellationToken)
 #pragma warning restore IDE0060 // Remove unused parameter
         {
             OpenAIClient client = DocGptOptions.Instance.GetClient();
@@ -67,6 +67,11 @@
                 if (HasOverrideModifier(node))
                 {
                     return await DecorateWithInheritDocAsync(node, document, cancellationToken);
+                }
+
+                if (IsConstantLiteral(ref node))
+                {
+                    return await DecorateWithValueAsSummaryAsync(node as FieldDeclarationSyntax, document, cancellationToken);
                 }
 
                 // Get the body of the method

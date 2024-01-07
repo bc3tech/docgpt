@@ -2,6 +2,8 @@
 {
     using System.Threading.Tasks;
 
+    using DocGpt.Options;
+
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using VerifyCS = CSharpCodeFixVerifier<DocGptAnalyzer, DocGptCodeFixProvider>;
@@ -12,45 +14,58 @@
     [TestClass]
     public class CodeFixTests
     {
+        [ClassInitialize]
+        public static void ClassInit(TestContext context)
+        {
+            DocGptOptions.Instance.Endpoint = new System.Uri("http://localhost:5000");
+            DocGptOptions.Instance.ApiKey = "foo";
+            DocGptOptions.Instance.ModelDeploymentName = "foo";
+
+        }
+
         /// <summary>
         /// Analyzers the throws class decl.
         /// </summary>
         /// <returns>A Task.</returns>
         [TestMethod]
-        public async Task CodeFix_DGPT001()
+        public async Task CodeFix_DGPT001_Constant()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
+            string test = @"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+    /// <summary></summary>
+    class MyClass
     {
-        class MyClass
-        {   
-        }
-    }";
+        internal const string MyConst = ""Foo"";
+    }
+}";
 
-            var fixd = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
+            string fixd = @"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+    /// <summary></summary>
+    class MyClass
     {
-        /// <summary></summary>
-        class MyClass
-        {   
-        }
-    }";
+        /// <summary>Foo</summary>
+        internal const string MyConst = ""Foo"";
+    }
+}";
 
-            var expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(11, 15, 11, 22).WithArguments("MyClass");
+            Microsoft.CodeAnalysis.Testing.DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(14, 31, 14, 38).WithArguments("FieldDeclaration", "MyConst");
             await VerifyCS.VerifyCodeFixAsync(test, expected, fixd);
         }
     }

@@ -1,15 +1,16 @@
 ﻿namespace DocGpt
 {
     using System.Collections.Immutable;
-    using System.Linq;
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
 
+    using static Helpers;
+
     /// <summary>
-    /// The doc gpt analyzer.
+    /// Represents a diagnostic analyzer for the DocGptAnalyzer class.
     /// </summary>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DocGptAnalyzer : DiagnosticAnalyzer
@@ -25,15 +26,10 @@
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
 
-        /// <summary>
-        /// Gets the supported diagnostics.
-        /// </summary>
+        /// <inheritdoc />
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-        /// <summary>
-        /// TODO: Add Summary
-        /// </summary>
-        /// <param name="context">The context.</param>
+        /// <inheritdoc />
         public override void Initialize(AnalysisContext context)
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -45,42 +41,37 @@
             }
         }
 
+        /// <summary>
+        /// Analyzes the given syntax node.
+        /// If XML documentation exists for the node, no diagnostic is reported.
+        /// If no XML documentation is found, a diagnostic for missing XML documentation is created and reported.
+        /// </summary>
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             SyntaxNode node = context.Node;
-            //if (context.Node is PropertyDeclarationSyntax s && IsAutoProperty(s))
-            //{
-            //    return;
-            //}
 
-            // Check if the node has leading trivia (which is where the XML documentation would be)
-            if (node.HasLeadingTrivia)
+            if (ShouldSkip(node))
             {
-                // Go through each piece of trivia leading the node
-                foreach (SyntaxTrivia trivia in node.GetLeadingTrivia())
-                {
-                    // Check if the trivia is of kind 'DocumentationCommentTrivia'
-                    if (trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia) ||
-                        trivia.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))
-                    {
-                        // XML documentation exists, so return without reporting a diagnostic
-                        return;
-                    }
-                }
+                return;
             }
 
-            // If this point is reached, then no XML documentation was found
-            // Create and report the diagnostic for missing XML documentation
-            ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(node);
-            Diagnostic diagnostic = Diagnostic.Create(Rule, symbol.Locations[0], node.Kind(), symbol.Name);
+            // Create and report the diagnostic
+            (Location loc, string name) = getLocationAndName();
+            Diagnostic diagnostic = Diagnostic.Create(Rule, loc, node.Kind(), name);
             context.ReportDiagnostic(diagnostic);
-        }
 
-        private static bool IsAutoProperty(PropertyDeclarationSyntax property)
-        {
-            // An auto-property will have at least one accessor with no body
-            return property.AccessorList != null &&
-                   property.AccessorList.Accessors.Any(a => a.Body == null && a.ExpressionBody == null);
+            (Location, string) getLocationAndName()
+            {
+                if (node is FieldDeclarationSyntax fs)
+                {
+
+                    SyntaxToken vi = fs.Declaration.Variables.First().Identifier;
+                    return (vi.GetLocation(), vi.ValueText);
+                }
+
+                ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(node);
+                return (symbol.Locations[0], symbol.Name);
+            }
         }
     }
 }

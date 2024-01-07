@@ -20,7 +20,7 @@
         [TestMethod]
         public async Task AnalyzerPasses_BlankFile()
         {
-            var test = @"";
+            string test = @"";
 
             await VerifyCS.VerifyAnalyzerAsync(test, DiagnosticResult.EmptyDiagnosticResults);
         }
@@ -32,7 +32,7 @@
         [TestMethod]
         public async Task AnalyzerPasses_DocumentedClass()
         {
-            var test = @"
+            string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -58,7 +58,7 @@
         [TestMethod]
         public async Task AnalyzerThrows_ClassDecl()
         {
-            var test = @"
+            string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -73,7 +73,35 @@
         }
     }";
 
-            var expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(11, 15, 11, 22).WithArguments("MyClass");
+            DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(11, 15, 11, 22).WithArguments("ClassDeclaration", "MyClass");
+            await VerifyCS.VerifyAnalyzerAsync(test, expected);
+        }
+
+        /// <summary>
+        /// Test method2.
+        /// </summary>
+        /// <returns>A Task.</returns>
+        [TestMethod]
+        public async Task AnalyzerThrows_ConstLiteralMember()
+        {
+            string test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+        /// <summary></summary>
+        internal class MyClass
+        {   
+            internal const string MyConst = ""Foo"";
+        }
+    }";
+
+            DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(14, 35, 14, 42).WithArguments("FieldDeclaration", "MyConst");
             await VerifyCS.VerifyAnalyzerAsync(test, expected);
         }
     }
