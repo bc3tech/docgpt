@@ -1,6 +1,5 @@
 ﻿namespace DocGpt
 {
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -57,14 +56,10 @@
 
         public static bool IsConstantLiteral(ref SyntaxNode node)
         {
-            if (node is VariableDeclaratorSyntax)
+            if (node is VariableDeclaratorSyntax
+                && node.Parent?.Parent is FieldDeclarationSyntax field)
             {
-                Debug.Assert(node.Parent.Parent is FieldDeclarationSyntax);
                 node = node.Parent.Parent;
-            }
-
-            if (node is FieldDeclarationSyntax field)
-            {
                 if (field?.Modifiers.Any(SyntaxKind.ConstKeyword) is true
                     && field.Declaration.Variables.FirstOrDefault()?.Initializer?.Value is LiteralExpressionSyntax)
                 {

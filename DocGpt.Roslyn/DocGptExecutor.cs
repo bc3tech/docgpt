@@ -88,17 +88,15 @@
 
 You are to give back only the XML documentation wrapped in a code block (```), do not respond with any other text."));
 
-                SyntaxNode syntaxRoot = await document.GetSyntaxRootAsync();
-                SyntaxNode diagNode = syntaxRoot.FindNode(location.SourceSpan);
                 try
                 {
                     Azure.Response<ChatCompletions> completion = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
                     string comment = completion.Value.Choices[0].Message.Content;
                     ExtractXmlDocComment(ref comment);
 
-                    SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, diagNode.GetLeadingTrivia());
+                    SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
                     // Add the comment to the start of the node found by the analyzer
-                    SyntaxNode newRoot = syntaxRoot.ReplaceNode(diagNode, diagNode.WithLeadingTrivia(commentTrivia /*.Insert(0, SyntaxFactory.CarriageReturnLineFeed).Add(SyntaxFactory.CarriageReturnLineFeed)*/));
+                    SyntaxNode newRoot = root.ReplaceNode(node, node.WithLeadingTrivia(commentTrivia /*.Insert(0, SyntaxFactory.CarriageReturnLineFeed).Add(SyntaxFactory.CarriageReturnLineFeed)*/));
 
                     // return a document with the new syntax root
                     document = document.WithSyntaxRoot(Formatter.Format(newRoot, document.Project.Solution.Workspace));

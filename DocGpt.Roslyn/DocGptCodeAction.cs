@@ -42,9 +42,13 @@
             SyntaxNode root = await _doc.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode node = root.FindNode(diagnosticSpan);
 
-            return !HasOverrideModifier(node)
-                ? DocGptCodeActionPreviewOperation.InstanceArray
-                : await base.ComputePreviewOperationsAsync(cancellationToken);
+            if (HasOverrideModifier(node) || IsConstantLiteral(ref node))
+            {
+                return await base.ComputePreviewOperationsAsync(cancellationToken);
+
+            }
+
+            return DocGptCodeActionPreviewOperation.InstanceArray;
         }
 
         /// <inheritdoc />
@@ -65,7 +69,7 @@
             private DocGptCodeActionPreviewOperation() { }
 
             /// <inheritdoc />
-            public override string Title { get; } = "Sends this entire member's definition to the defined OpenAI endpoint for summary text generation and applies the result.";
+            public override string Title { get; } = "Sends this entire member's definition (and body) to the defined OpenAI endpoint for summary text generation and applies the result.";
 
             /// <inheritdoc />
             public override Task<object> GetPreviewAsync(CancellationToken cancellationToken) => Task.FromResult<object>(Title);

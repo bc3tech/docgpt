@@ -25,6 +25,7 @@
             get
             {
                 return ImmutableArray.Create("CS1591",    // The diagnostic id of the XML Documentation an analyzer fired when XML doc gen is turned on but missing from a visible member
+                    "CD1606",   // Diagnostic from "CodeDocumentor" analyzer (https://marketplace.visualstudio.com/items?itemName=DanTurco.CodeDocumentor)
                 DocGptAnalyzer.DiagnosticId);
             }
         }

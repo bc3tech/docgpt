@@ -14,6 +14,8 @@
     [TestClass]
     public class CodeFixTests
     {
+        public static TestContext Context { get; private set; }
+
         [ClassInitialize]
         public static void ClassInit(TestContext context)
         {
@@ -21,6 +23,7 @@
             DocGptOptions.Instance.ApiKey = "foo";
             DocGptOptions.Instance.ModelDeploymentName = "foo";
 
+            Context = context;
         }
 
         /// <summary>
