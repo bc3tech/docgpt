@@ -14,16 +14,12 @@
     [TestClass]
     public class CodeFixTests
     {
-        public TestContext Context { get; set; }
-
         [ClassInitialize]
-        public static void ClassInit(TestContext context)
+        public static void ClassInit(TestContext _)
         {
             DocGptOptions.Instance.Endpoint = new System.Uri("http://localhost:5000");
             DocGptOptions.Instance.ApiKey = "foo";
             DocGptOptions.Instance.ModelDeploymentName = "foo";
-
-            //Context = context;
         }
 
         /// <summary>
