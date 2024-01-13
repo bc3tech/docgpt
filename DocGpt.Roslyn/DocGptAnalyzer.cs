@@ -34,8 +34,8 @@
         /// <inheritdoc />
         public override void Initialize(AnalysisContext context)
         {
-            if (DocGptOptions.Instance.Endpoint is null
-                || string.IsNullOrWhiteSpace(DocGptOptions.Instance.Endpoint.OriginalString))
+            if (DocGptOptions.Instance.ApiKey is null
+                || string.IsNullOrWhiteSpace(DocGptOptions.Instance.ApiKey))
             {
                 return;
             }

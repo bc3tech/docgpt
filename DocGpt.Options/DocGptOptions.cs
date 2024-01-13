@@ -56,7 +56,7 @@
 
         private OpenAIClient _client;
         private string _apiKey;
-        private Uri _endpoint;
+        private Uri _endpoint = new Uri("https://api.openai.com");
 
         /// <summary>
         /// Gets an instance of the OpenAIClient. If the client instance is null, it creates a new instance 
