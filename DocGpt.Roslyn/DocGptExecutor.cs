@@ -1,9 +1,5 @@
 ﻿namespace DocGpt
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     using Azure.AI.OpenAI;
 
     using DocGpt.Options;
@@ -12,6 +8,10 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Formatting;
+
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     using static Helpers;
 
@@ -64,7 +64,7 @@
 
             if (node != null)
             {
-                if (HasOverrideModifier(node))
+                if (HasOverrideModifier(node) && DocGptOptions.Instance.OverridesBehavior is OverrideBehavior.UseInheritDoc)
                 {
                     return await DecorateWithInheritDocAsync(node, document, cancellationToken);
                 }

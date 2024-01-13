@@ -78,7 +78,7 @@
         /// <summary>
         /// Gets or Sets whether/not to add <inheritdoc /> tags to overridden members.
         /// </summary>
-        public bool UseInheritDocForOverrides { get; set; } = true;
+        public OverrideBehavior OverridesBehavior { get; set; } = OverrideBehavior.UseInheritDoc;
 
         /// <summary>
         /// Gets or Sets whether/not to add <summary>{value}</summary> on literal constants.

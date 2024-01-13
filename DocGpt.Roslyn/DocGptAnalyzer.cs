@@ -72,7 +72,6 @@
             {
                 if (node is FieldDeclarationSyntax fs)
                 {
-
                     SyntaxToken vi = fs.Declaration.Variables.First().Identifier;
                     return (vi.GetLocation(), vi.ValueText);
                 }

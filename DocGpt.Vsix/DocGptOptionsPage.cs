@@ -47,16 +47,16 @@
         /// Gets or Sets whether/not to add <inheritdoc /> tags to overridden members.
         /// </summary>
         [Category("Documentation Configuration")]
-        [DisplayName("Add <inheritdoc /> to overridden members")]
-        [Description("Adds the <inheritdoc /> to all members that override inherited members")]
-        public bool UseInheritDocForOverrides { get => _options.UseInheritDocForOverrides; set => _options.UseInheritDocForOverrides = value; }
+        [DisplayName("Overrides behavior")]
+        [Description("DoNotDocument = Do not document\r\nUseInheritDoc = Use <inheritdoc />\r\nGptSummarize = Send to GPT for summarization")]
+        public OverrideBehavior OverridesBehavior { get => _options.OverridesBehavior; set => _options.OverridesBehavior = value; }
 
         /// <summary>
         /// Gets or Sets whether/not to add <summary>{value}</summary> on literal constants.
         /// </summary>
         [Category("Documentation Configuration")]
         [DisplayName("Use {value} for literal constants")]
-        [Description("Adds <summary>{value}</summary> on literal constants, where {value} is the literal value assigned to the constant.")]
+        [Description("Adds <summary>{value}</summary> on literal constants, where {value} is the literal value assigned to the constant. Otherwise, constants will not be documented by Doc GPT.")]
         public bool UseValueForLiteralConstants { get => _options.UseValueForLiteralConstants; set => _options.UseValueForLiteralConstants = value; }
     }
 }

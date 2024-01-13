@@ -1,13 +1,15 @@
 ﻿namespace DocGpt
 {
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
+    using DocGpt.Options;
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Formatting;
+
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     internal static class Helpers
     {
@@ -45,14 +47,23 @@
                 }
             }
 
-            // Skip field declarations that are not constants with a literal expression
+            // Skip overrides if user has elected not to document them
+            if (IsOverriddenMember(node))
+            {
+                return DocGptOptions.Instance.OverridesBehavior is OverrideBehavior.DoNotDocument;
+            }
+
+            // Skip field declarations that are not constants with a literal expression,
+            // or if user has set the option to not document these.
             if (IsConstantLiteral(ref node))
             {
-                return false;
+                return !DocGptOptions.Instance.UseValueForLiteralConstants;
             }
 
             return node is VariableDeclarationSyntax;
         }
+
+        public static bool IsOverriddenMember(SyntaxNode node) => node is MemberDeclarationSyntax m ? m.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.OverrideKeyword)) : false;
 
         public static bool IsConstantLiteral(ref SyntaxNode node)
         {
