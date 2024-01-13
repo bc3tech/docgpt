@@ -1,9 +1,8 @@
 ﻿namespace DocGpt.Options
 {
-    using System;
-    using System.ComponentModel;
-
     using Azure.AI.OpenAI;
+
+    using System;
 
     /// <summary>
     /// Represents the configuration options for an OpenAI or Azure-based OpenAI service.
@@ -21,9 +20,6 @@
         /// <summary>
         /// Gets or Sets the endpoint.
         /// </summary>
-        [Category("OpenAI Configuration")]
-        [DisplayName("Endpoint URL")]
-        [Description("The OpenAI or Azure OpenAI endpoint url.")]
         public Uri Endpoint
         {
             get => _endpoint;
@@ -40,9 +36,6 @@
         /// <value>
         /// The API key.
         /// </value>
-        [Category("OpenAI Configuration")]
-        [DisplayName("API Key")]
-        [Description("The OpenAI or Azure OpenAI API Key.")]
         public string ApiKey
         {
             get => _apiKey;
@@ -59,9 +52,6 @@
         /// <value>
         /// The OpenAI or Azure OpenAI API model or deployment name.
         /// </value>
-        [Category("OpenAI Configuration")]
-        [DisplayName("Model/Deployment Name")]
-        [Description("The OpenAI or Azure OpenAI API model or deployment name.")]
         public string ModelDeploymentName { get; set; }
 
         private OpenAIClient _client;
@@ -84,5 +74,15 @@
 
             return _client;
         }
+
+        /// <summary>
+        /// Gets or Sets whether/not to add <inheritdoc /> tags to overridden members.
+        /// </summary>
+        public bool UseInheritDocForOverrides { get; set; } = true;
+
+        /// <summary>
+        /// Gets or Sets whether/not to add <summary>{value}</summary> on literal constants.
+        /// </summary>
+        public bool UseValueForLiteralConstants { get; set; } = true;
     }
 }

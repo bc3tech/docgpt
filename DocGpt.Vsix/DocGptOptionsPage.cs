@@ -1,12 +1,12 @@
 ﻿namespace DocGpt.Vsix
 {
-    using System;
-    using System.ComponentModel;
-    using System.Runtime.InteropServices;
-
     using DocGpt.Options;
 
     using Microsoft.VisualStudio.Shell;
+
+    using System;
+    using System.ComponentModel;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// The doc gpt options page.
@@ -43,5 +43,20 @@
         [Description("The OpenAI or Azure OpenAI API model or deployment name.")]
         public string ModelDeploymentName { get => _options.ModelDeploymentName; set => _options.ModelDeploymentName = value; }
 
+        /// <summary>
+        /// Gets or Sets whether/not to add <inheritdoc /> tags to overridden members.
+        /// </summary>
+        [Category("Documentation Configuration")]
+        [DisplayName("Add <inheritdoc /> to overridden members")]
+        [Description("Adds the <inheritdoc /> to all members that override inherited members")]
+        public bool UseInheritDocForOverrides { get => _options.UseInheritDocForOverrides; set => _options.UseInheritDocForOverrides = value; }
+
+        /// <summary>
+        /// Gets or Sets whether/not to add <summary>{value}</summary> on literal constants.
+        /// </summary>
+        [Category("Documentation Configuration")]
+        [DisplayName("Use {value} for literal constants")]
+        [Description("Adds <summary>{value}</summary> on literal constants, where {value} is the literal value assigned to the constant.")]
+        public bool UseValueForLiteralConstants { get => _options.UseValueForLiteralConstants; set => _options.UseValueForLiteralConstants = value; }
     }
 }
