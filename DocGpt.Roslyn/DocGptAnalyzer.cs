@@ -1,11 +1,13 @@
 ﻿namespace DocGpt
 {
-    using System.Collections.Immutable;
+    using DocGpt.Options;
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
+
+    using System.Collections.Immutable;
 
     using static Helpers;
 
@@ -32,6 +34,12 @@
         /// <inheritdoc />
         public override void Initialize(AnalysisContext context)
         {
+            if (DocGptOptions.Instance.Endpoint is null
+                || string.IsNullOrWhiteSpace(DocGptOptions.Instance.Endpoint.OriginalString))
+            {
+                return;
+            }
+
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
