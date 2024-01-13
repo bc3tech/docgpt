@@ -1,13 +1,11 @@
 ﻿namespace DocGpt
 {
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CodeActions;
 
-    using static Helpers;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// This is an internal implementaion of CodeAction, that uses OpenAI technology for generating summary text for a member's definition.
@@ -42,13 +40,12 @@
             SyntaxNode root = await _doc.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode node = root.FindNode(diagnosticSpan);
 
-            if (HasOverrideModifier(node) || IsConstantLiteral(ref node))
+            if (DocGptExecutor.NodeTriggersGpt(node))
             {
-                return await base.ComputePreviewOperationsAsync(cancellationToken);
-
+                return DocGptCodeActionPreviewOperation.InstanceArray;
             }
 
-            return DocGptCodeActionPreviewOperation.InstanceArray;
+            return await base.ComputePreviewOperationsAsync(cancellationToken);
         }
 
         /// <inheritdoc />

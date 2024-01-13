@@ -55,7 +55,7 @@
 
             // Skip field declarations that are not constants with a literal expression,
             // or if user has set the option to not document these.
-            if (IsConstantLiteral(ref node))
+            if (IsConstantLiteral(node, out var parentField))
             {
                 return !DocGptOptions.Instance.UseValueForLiteralConstants;
             }
@@ -65,12 +65,14 @@
 
         public static bool IsOverriddenMember(SyntaxNode node) => node is MemberDeclarationSyntax m ? m.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.OverrideKeyword)) : false;
 
-        public static bool IsConstantLiteral(ref SyntaxNode node)
+        public static bool IsConstantLiteral(SyntaxNode node, out FieldDeclarationSyntax parentField)
         {
+            parentField = null;
+
             if (node is VariableDeclaratorSyntax
                 && node.Parent?.Parent is FieldDeclarationSyntax field)
             {
-                node = node.Parent.Parent;
+                parentField = field;
                 if (field?.Modifiers.Any(SyntaxKind.ConstKeyword) is true
                     && field.Declaration.Variables.FirstOrDefault()?.Initializer?.Value is LiteralExpressionSyntax)
                 {

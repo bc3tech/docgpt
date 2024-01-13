@@ -6,7 +6,6 @@
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Formatting;
 
     using System;
@@ -69,9 +68,9 @@
                     return await DecorateWithInheritDocAsync(node, document, cancellationToken);
                 }
 
-                if (IsConstantLiteral(ref node))
+                if (IsConstantLiteral(node, out var parentField) && DocGptOptions.Instance.UseValueForLiteralConstants is true)
                 {
-                    return await DecorateWithValueAsSummaryAsync(node as FieldDeclarationSyntax, document, cancellationToken);
+                    return await DecorateWithValueAsSummaryAsync(parentField, document, cancellationToken);
                 }
 
                 // Get the body of the method
@@ -103,18 +102,31 @@ You are to give back only the XML documentation wrapped in a code block (```), d
                 }
                 catch (Exception e)
                 {
-#if DEBUG
                     if (!(e is TaskCanceledException) && !(e is OperationCanceledException))
                     {
                         System.Diagnostics.Debugger.Break();
                     }
-#else
+
                     throw;
-#endif
                 }
             }
 
             return document;
+        }
+
+        internal static bool NodeTriggersGpt(SyntaxNode node)
+        {
+            if (HasOverrideModifier(node) && DocGptOptions.Instance.OverridesBehavior is OverrideBehavior.GptSummarize)
+            {
+                return true;
+            }
+
+            if (IsConstantLiteral(node, out _) && DocGptOptions.Instance.UseValueForLiteralConstants != true)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

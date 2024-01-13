@@ -1,15 +1,13 @@
 ﻿namespace DocGpt
 {
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CodeFixes;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+
     using System.Collections.Immutable;
     using System.Composition;
     using System.Linq;
     using System.Threading.Tasks;
-
-    using DocGpt.Options;
-
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// The doc gpt code fix provider.
@@ -47,12 +45,6 @@
         /// <returns>A Task.</returns>
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            if (DocGptOptions.Instance.Endpoint is null
-                || string.IsNullOrWhiteSpace(DocGptOptions.Instance.Endpoint.OriginalString))
-            {
-                return;
-            }
-
             SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
             Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(i => FixableDiagnosticIds.Contains(i.Id));
