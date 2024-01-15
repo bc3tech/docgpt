@@ -95,7 +95,7 @@ You are to give back only the XML documentation wrapped in a code block (```), d
 
                     SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
                     // Add the comment to the start of the node found by the analyzer
-                    SyntaxNode newRoot = root.ReplaceNode(node, node.WithLeadingTrivia(commentTrivia /*.Insert(0, SyntaxFactory.CarriageReturnLineFeed).Add(SyntaxFactory.CarriageReturnLineFeed)*/));
+                    SyntaxNode newRoot = root.ReplaceNode(node, node.WithLeadingTrivia(commentTrivia));
 
                     // return a document with the new syntax root
                     document = document.WithSyntaxRoot(Formatter.Format(newRoot, document.Project.Solution.Workspace));
@@ -116,14 +116,14 @@ You are to give back only the XML documentation wrapped in a code block (```), d
 
         internal static bool NodeTriggersGpt(SyntaxNode node)
         {
-            if (HasOverrideModifier(node) && DocGptOptions.Instance.OverridesBehavior is OverrideBehavior.GptSummarize)
+            if (HasOverrideModifier(node))
             {
-                return true;
+                return DocGptOptions.Instance.OverridesBehavior is OverrideBehavior.GptSummarize;
             }
 
-            if (IsConstantLiteral(node, out _) && DocGptOptions.Instance.UseValueForLiteralConstants != true)
+            if (IsConstantLiteral(node, out _))
             {
-                return false;
+                return !(DocGptOptions.Instance.UseValueForLiteralConstants is true);
             }
 
             return true;
