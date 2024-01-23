@@ -5,8 +5,6 @@ VisualStudioVersion = 17.9.34407.89
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocGpt.Test", "DocGpt.Test\DocGpt.Test.csproj", "{AEF7FF2D-1E07-4A18-A951-91F19DD2ED9A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocGpt.Options", "DocGpt.Options\DocGpt.Options.csproj", "{926508FB-D431-4BC3-BB2C-F135E7D77426}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocGpt.Vsix", "DocGpt.Vsix\DocGpt.Vsix.csproj", "{1F6C5045-2935-4E0F-9A07-2E497BC48AA2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution Items", ".Solution Items", "{B21B7D0F-85AB-4643-8697-022056AAE095}"
@@ -15,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution Items", ".Solutio
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocGpt.Roslyn", "DocGpt.Roslyn\DocGpt.Roslyn.csproj", "{8301B63A-F134-4D1B-9FC4-A293562E6EB3}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DocGpt.Shared", "DocGpt.Shared\DocGpt.Shared.shproj", "{52AA2CD1-DDD7-41F8-AD0D-F33D5268F70E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,18 +38,6 @@ Global
 		{AEF7FF2D-1E07-4A18-A951-91F19DD2ED9A}.Release|arm64.Build.0 = Release|Any CPU
 		{AEF7FF2D-1E07-4A18-A951-91F19DD2ED9A}.Release|x86.ActiveCfg = Release|Any CPU
 		{AEF7FF2D-1E07-4A18-A951-91F19DD2ED9A}.Release|x86.Build.0 = Release|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Debug|arm64.Build.0 = Debug|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Debug|x86.Build.0 = Debug|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Release|Any CPU.Build.0 = Release|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Release|arm64.ActiveCfg = Release|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Release|arm64.Build.0 = Release|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Release|x86.ActiveCfg = Release|Any CPU
-		{926508FB-D431-4BC3-BB2C-F135E7D77426}.Release|x86.Build.0 = Release|Any CPU
 		{1F6C5045-2935-4E0F-9A07-2E497BC48AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F6C5045-2935-4E0F-9A07-2E497BC48AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F6C5045-2935-4E0F-9A07-2E497BC48AA2}.Debug|arm64.ActiveCfg = Debug|arm64
@@ -80,5 +68,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F3127F76-D65A-4D08-9589-B3AD40EE872E}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DocGpt.Shared\DocGpt.Shared.projitems*{52aa2cd1-ddd7-41f8-ad0d-f33d5268f70e}*SharedItemsImports = 13
+		DocGpt.Shared\DocGpt.Shared.projitems*{8301b63a-f134-4d1b-9fc4-a293562e6eb3}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

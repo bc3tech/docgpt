@@ -13,7 +13,7 @@
 
     internal static class Helpers
     {
-        public static bool HasOverrideModifier(SyntaxNode node) => node is MemberDeclarationSyntax m ? m.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.OverrideKeyword)) : false;
+        public static bool HasOverrideModifier(SyntaxNode node) => node is MemberDeclarationSyntax m && m.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.OverrideKeyword));
 
         public static Task<Document> DecorateWithInheritDocAsync(SyntaxNode node, Document document, CancellationToken cancellationToken = default) => DecorateWithXmlDocumentationAsync(node, document, @"/// <inheritdoc />", cancellationToken);
 
@@ -63,7 +63,7 @@
             return node is VariableDeclarationSyntax;
         }
 
-        public static bool IsOverriddenMember(SyntaxNode node) => node is MemberDeclarationSyntax m ? m.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.OverrideKeyword)) : false;
+        public static bool IsOverriddenMember(SyntaxNode node) => node is MemberDeclarationSyntax m && m.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.OverrideKeyword));
 
         public static bool IsConstantLiteral(SyntaxNode node, out FieldDeclarationSyntax parentField)
         {

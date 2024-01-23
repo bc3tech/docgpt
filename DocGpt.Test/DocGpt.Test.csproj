@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.12" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0-preview-23577-04" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.2.0-preview.23623.1" />
     <PackageReference Include="MSTest.TestFramework" Version="3.2.0-preview.23623.1" />

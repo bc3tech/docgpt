@@ -37,7 +37,6 @@
                 // Add other member types if needed
             };
 
-#pragma warning disable IDE0060 // Remove unused parameter
         /// <summary>
         /// Asynchronously adds XML documentation to a given document based on a provided diagnostic, using GPT for generating the documentation.
         /// </summary>
@@ -46,7 +45,6 @@
         /// <param name="cancellationToken">A cancellation token for the operation.</param>
         /// <returns>A Task returning a Document with the new XML documentation added.</returns>
         public static async Task<Document> AddXmlDocumentationAsync(Document document, Location location, CancellationToken cancellationToken)
-#pragma warning restore IDE0060 // Remove unused parameter
         {
             OpenAIClient client = DocGptOptions.Instance.GetClient();
 

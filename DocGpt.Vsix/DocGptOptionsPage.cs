@@ -3,6 +3,7 @@
     using DocGpt.Options;
 
     using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Threading;
 
     using System;
     using System.ComponentModel;

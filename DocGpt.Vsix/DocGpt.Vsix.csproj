@@ -91,6 +91,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI">
+      <Version>1.0.0-beta.12</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
       <Version>17.8.37221</Version>
     </PackageReference>
@@ -103,10 +106,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DocGpt.Options\DocGpt.Options.csproj">
-      <Project>{926508fb-d431-4bc3-bb2c-f135e7d77426}</Project>
-      <Name>DocGpt.Options</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DocGpt.Roslyn\DocGpt.Roslyn.csproj">
       <Project>{8301B63A-F134-4D1B-9FC4-A293562E6EB3}</Project>
       <Name>DocGpt.Roslyn</Name>

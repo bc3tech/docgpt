@@ -9,7 +9,7 @@
     /// This includes properties required for connection such as the endpoint URL and API key.
     /// It also includes the name of the model or deployment to use.
     /// </summary>
-    internal class DocGptOptions
+    public class DocGptOptions
     {
         public static readonly DocGptOptions Instance = new DocGptOptions();
         /// <summary>

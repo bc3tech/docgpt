@@ -40,12 +40,9 @@
             SyntaxNode root = await _doc.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode node = root.FindNode(diagnosticSpan);
 
-            if (DocGptExecutor.NodeTriggersGpt(node))
-            {
-                return DocGptCodeActionPreviewOperation.InstanceArray;
-            }
-
-            return await base.ComputePreviewOperationsAsync(cancellationToken);
+            return DocGptExecutor.NodeTriggersGpt(node)
+                ? DocGptCodeActionPreviewOperation.InstanceArray
+                : await base.ComputePreviewOperationsAsync(cancellationToken);
         }
 
         /// <inheritdoc />
