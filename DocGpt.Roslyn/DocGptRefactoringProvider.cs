@@ -1,16 +1,14 @@
 ﻿namespace DocGpt
 {
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CodeRefactorings;
+    using Microsoft.CodeAnalysis.CSharp;
+
     using System;
     using System.Composition;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using DocGpt.Options;
-
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeRefactorings;
-    using Microsoft.CodeAnalysis.CSharp;
 
     /// <summary>
     /// The doc gpt code fix provider.
@@ -20,12 +18,6 @@
     {
         public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
         {
-            if (DocGptOptions.Instance.Endpoint is null
-                || string.IsNullOrWhiteSpace(DocGptOptions.Instance.Endpoint.OriginalString))
-            {
-                return;
-            }
-
             Document document = context.Document;
             Microsoft.CodeAnalysis.Text.TextSpan textSpan = context.Span;
             CancellationToken cancellationToken = context.CancellationToken;

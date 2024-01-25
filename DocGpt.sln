@@ -14,8 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution Items", ".Solutio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocGpt.Roslyn", "DocGpt.Roslyn\DocGpt.Roslyn.csproj", "{8301B63A-F134-4D1B-9FC4-A293562E6EB3}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DocGpt.Shared", "DocGpt.Shared\DocGpt.Shared.shproj", "{52AA2CD1-DDD7-41F8-AD0D-F33D5268F70E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,9 +66,5 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F3127F76-D65A-4D08-9589-B3AD40EE872E}
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		DocGpt.Shared\DocGpt.Shared.projitems*{52aa2cd1-ddd7-41f8-ad0d-f33d5268f70e}*SharedItemsImports = 13
-		DocGpt.Shared\DocGpt.Shared.projitems*{8301b63a-f134-4d1b-9fc4-a293562e6eb3}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

@@ -1,7 +1,5 @@
 ﻿namespace DocGpt
 {
-    using DocGpt.Options;
-
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -26,7 +24,7 @@
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(AnalyzerResources.AnalyzerDescription), AnalyzerResources.ResourceManager, typeof(AnalyzerResources));
         private const string Category = "Documentation";
 
-        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
 
         /// <inheritdoc />
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -34,12 +32,6 @@
         /// <inheritdoc />
         public override void Initialize(AnalysisContext context)
         {
-            if (DocGptOptions.Instance.ApiKey is null
-                || string.IsNullOrWhiteSpace(DocGptOptions.Instance.ApiKey))
-            {
-                return;
-            }
-
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
@@ -49,12 +41,14 @@
             }
         }
 
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context) => AnalyzeNode(context, false);
+
         /// <summary>
         /// Analyzes the given syntax node.
         /// If XML documentation exists for the node, no diagnostic is reported.
         /// If no XML documentation is found, a diagnostic for missing XML documentation is created and reported.
         /// </summary>
-        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context, bool evented)
         {
             SyntaxNode node = context.Node;
 

@@ -5,28 +5,23 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.CodeAnalysis.Formatting;
 
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     internal static class Helpers
     {
         public static bool HasOverrideModifier(SyntaxNode node) => node is MemberDeclarationSyntax m && m.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.OverrideKeyword));
 
-        public static Task<Document> DecorateWithInheritDocAsync(SyntaxNode node, Document document, CancellationToken cancellationToken = default) => DecorateWithXmlDocumentationAsync(node, document, @"/// <inheritdoc />", cancellationToken);
+        public static SyntaxNode DecorateWithInheritDoc(SyntaxNode node) => DecorateWithXmlDocumentation(node, @"/// <inheritdoc />");
 
-        public static Task<Document> DecorateWithValueAsSummaryAsync(FieldDeclarationSyntax node, Document document, CancellationToken cancellationToken) => DecorateWithXmlDocumentationAsync(node, document, $"/// <summary>{node.Declaration.Variables[0].Initializer.Value.ChildTokens().First().ValueText}</summary>", cancellationToken);
+        public static SyntaxNode DecorateWithValueAsSummary(FieldDeclarationSyntax node) => DecorateWithXmlDocumentation(node, $"/// <summary>{node.Declaration.Variables[0].Initializer.Value.ChildTokens().First().ValueText}</summary>");
 
-        public static async Task<Document> DecorateWithXmlDocumentationAsync(SyntaxNode node, Document document, string documentationContent, CancellationToken cancellationToken = default)
+        public static SyntaxNode DecorateWithXmlDocumentation(SyntaxNode node, string documentationContent)
         {
             SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia($@"{documentationContent}
 ").InsertRange(0, node.GetLeadingTrivia());
 
-            SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
-            SyntaxNode newRoot = root.ReplaceNode(node, node.WithLeadingTrivia(commentTrivia));
-            return document.WithSyntaxRoot(Formatter.Format(newRoot, document.Project.Solution.Workspace));
+            return node.WithLeadingTrivia(commentTrivia);
         }
 
         public static bool ShouldSkip(SyntaxNode node)

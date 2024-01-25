@@ -9,13 +9,13 @@
     /// This includes properties required for connection such as the endpoint URL and API key.
     /// It also includes the name of the model or deployment to use.
     /// </summary>
-    public class DocGptOptions
+    public sealed class DocGptOptions
     {
         public static readonly DocGptOptions Instance = new DocGptOptions();
         /// <summary>
         /// Initializes a new instance of the <see cref="DocGptOptions"/> class.
         /// </summary>
-        protected DocGptOptions() { }
+        private DocGptOptions() { }
 
         /// <summary>
         /// Gets or Sets the endpoint.
@@ -68,8 +68,8 @@
             {
                 _client =
                     _endpoint.Host.EndsWith("azure.com", StringComparison.OrdinalIgnoreCase)
-                    ? new OpenAIClient(_endpoint, new Azure.AzureKeyCredential(_apiKey))
-                    : new OpenAIClient(_apiKey);
+                    ? new OpenAIClient(_endpoint ?? throw new ArgumentNullException(nameof(Endpoint)), new Azure.AzureKeyCredential(_apiKey ?? throw new ArgumentNullException(nameof(ApiKey))))
+                    : new OpenAIClient(_apiKey ?? throw new ArgumentNullException(nameof(ApiKey)));
             }
 
             return _client;

@@ -2,10 +2,13 @@
 {
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CodeActions;
+    using Microsoft.CodeAnalysis.Formatting;
 
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+
+    using Document = Microsoft.CodeAnalysis.Document;
 
     /// <summary>
     /// This is an internal implementaion of CodeAction, that uses OpenAI technology for generating summary text for a member's definition.
@@ -46,7 +49,20 @@
         }
 
         /// <inheritdoc />
-        protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) => DocGptExecutor.AddXmlDocumentationAsync(_doc, _location, cancellationToken);
+        protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
+        {
+            // Find the node at the diagnostic span
+            Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = _location.SourceSpan;
+            SyntaxNode root = await _doc.GetSyntaxRootAsync(cancellationToken);
+            SyntaxNode node = root.FindNode(diagnosticSpan);
+
+            var newNode = await DocGptExecutor.AddXmlDocumentationAsync(node, cancellationToken);
+
+            SyntaxNode newRoot = root.ReplaceNode(node, newNode);
+
+            // return a document with the new syntax root
+            return _doc.WithSyntaxRoot(Formatter.Format(newRoot, _doc.Project.Solution.Workspace));
+        }
 
         /// <summary>
         /// Represents an operation that sends the entire member's definition to the defined OpenAI endpoint for summary text generation and applies the result.

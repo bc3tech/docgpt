@@ -37,6 +37,4 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<Import Project="..\DocGpt.Shared\DocGpt.Shared.projitems" Label="Shared" />
-
 </Project>

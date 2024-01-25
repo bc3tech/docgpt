@@ -6,7 +6,6 @@
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.Formatting;
 
     using System;
     using System.Threading;
@@ -40,41 +39,38 @@
         /// <summary>
         /// Asynchronously adds XML documentation to a given document based on a provided diagnostic, using GPT for generating the documentation.
         /// </summary>
-        /// <param name="document">The document to which XML documentation should be added.</param>
-        /// <param name="diagnostic">The diagnostic information used to generate the XML documentation.</param>
+        /// <param name="node">The node to add XML documentation to.</param>
         /// <param name="cancellationToken">A cancellation token for the operation.</param>
         /// <returns>A Task returning a Document with the new XML documentation added.</returns>
-        public static async Task<Document> AddXmlDocumentationAsync(Document document, Location location, CancellationToken cancellationToken)
+        public static async Task<SyntaxNode> AddXmlDocumentationAsync(SyntaxNode node, CancellationToken cancellationToken)
         {
-            OpenAIClient client = DocGptOptions.Instance.GetClient();
-
-            ChatCompletionsOptions completionOptions = new ChatCompletionsOptions();
-            if (!string.IsNullOrWhiteSpace(DocGptOptions.Instance.ModelDeploymentName))
-            {
-                completionOptions.DeploymentName = DocGptOptions.Instance.ModelDeploymentName;
-            }
-
             // Find the node at the diagnostic span
-            Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = location.SourceSpan;
-            SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
-            SyntaxNode node = root.FindNode(diagnosticSpan);
-
             if (node != null)
             {
                 if (HasOverrideModifier(node) && DocGptOptions.Instance.OverridesBehavior is OverrideBehavior.UseInheritDoc)
                 {
-                    return await DecorateWithInheritDocAsync(node, document, cancellationToken);
+                    return DecorateWithInheritDoc(node);
                 }
 
                 if (IsConstantLiteral(node, out var parentField) && DocGptOptions.Instance.UseValueForLiteralConstants is true)
                 {
-                    return await DecorateWithValueAsSummaryAsync(parentField, document, cancellationToken);
+                    return DecorateWithValueAsSummary(parentField);
                 }
 
                 // Get the body of the method
                 string code = node.GetText().ToString();
 
-                completionOptions.Messages.Add(new ChatRequestUserMessage($@"You are to take the C# code below and create a valid XML Documentation summary block for it according to .NET specifications. Use the following steps to determine what you compute for the answer:
+                try
+                {
+                    OpenAIClient client = DocGptOptions.Instance.GetClient();
+
+                    ChatCompletionsOptions completionOptions = new ChatCompletionsOptions();
+                    if (!string.IsNullOrWhiteSpace(DocGptOptions.Instance.ModelDeploymentName))
+                    {
+                        completionOptions.DeploymentName = DocGptOptions.Instance.ModelDeploymentName;
+                    }
+
+                    completionOptions.Messages.Add(new ChatRequestUserMessage($@"You are to take the C# code below and create a valid XML Documentation summary block for it according to .NET specifications. Use the following steps to determine what you compute for the answer:
 
 1. If the given code is not a complete C# type or member declaration, stop computing and return nothing.
 2. If you're not able to discern the purpose of the code with reasonable certainty, just return `/// <summary />`
@@ -85,31 +81,33 @@
 
 You are to give back only the XML documentation wrapped in a code block (```), do not respond with any other text."));
 
-                try
-                {
-                    Azure.Response<ChatCompletions> completion = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
-                    string comment = completion.Value.Choices[0].Message.Content;
-                    ExtractXmlDocComment(ref comment);
-
-                    SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
-                    // Add the comment to the start of the node found by the analyzer
-                    SyntaxNode newRoot = root.ReplaceNode(node, node.WithLeadingTrivia(commentTrivia));
-
-                    // return a document with the new syntax root
-                    document = document.WithSyntaxRoot(Formatter.Format(newRoot, document.Project.Solution.Workspace));
-                }
-                catch (Exception e)
-                {
-                    if (!(e is TaskCanceledException) && !(e is OperationCanceledException))
+                    try
                     {
-                        System.Diagnostics.Debugger.Break();
-                    }
+                        Azure.Response<ChatCompletions> completion = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
+                        string comment = completion.Value.Choices[0].Message.Content;
+                        ExtractXmlDocComment(ref comment);
 
-                    throw;
+                        SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
+                        // Add the comment to the start of the node found by the analyzer
+                        return node.WithLeadingTrivia(commentTrivia);
+                    }
+                    catch (Exception e)
+                    {
+                        if (!(e is TaskCanceledException) && !(e is OperationCanceledException))
+                        {
+                            System.Diagnostics.Debugger.Break();
+                        }
+
+                        throw;
+                    }
+                }
+                catch (ArgumentNullException e)
+                {
+                    return node.WithLeadingTrivia(SyntaxFactory.Comment($"// Missing {e.ParamName} - Make sure you've entered the necessary information in Tools | Options | Doc GPT and try again.\r\n"));
                 }
             }
 
-            return document;
+            return node;
         }
 
         internal static bool NodeTriggersGpt(SyntaxNode node)
