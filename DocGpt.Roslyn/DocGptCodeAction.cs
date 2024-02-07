@@ -56,9 +56,9 @@
             SyntaxNode root = await _doc.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode node = root.FindNode(diagnosticSpan);
 
-            var newNode = await DocGptExecutor.AddXmlDocumentationAsync(node, cancellationToken);
+            var (newNode, nodeToReplace) = await DocGptExecutor.AddXmlDocumentationAsync(node, cancellationToken);
 
-            SyntaxNode newRoot = root.ReplaceNode(node, newNode);
+            SyntaxNode newRoot = root.ReplaceNode(nodeToReplace, newNode);
 
             // return a document with the new syntax root
             return _doc.WithSyntaxRoot(Formatter.Format(newRoot, _doc.Project.Solution.Workspace));

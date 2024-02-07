@@ -26,6 +26,8 @@
             DocGptOptions.Instance.ModelDeploymentName = "foo";
         }
 
+        private const string ApiKey = "foo";
+
         /// <summary>
         /// Analyzers the throws class decl.
         /// </summary>

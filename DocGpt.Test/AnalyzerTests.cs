@@ -84,7 +84,7 @@
         /// </summary>
         /// <returns>A Task.</returns>
         [TestMethod]
-        public async Task AnalyzerThrows_ConstLiteralMember()
+        public async Task AnalyzerThrows_ConstLiteralMember_UseValueForComment()
         {
             DocGptOptions.Instance.UseValueForLiteralConstants = true;
 
@@ -114,7 +114,7 @@
         /// </summary>
         /// <returns>A Task.</returns>
         [TestMethod]
-        public async Task AnalyzerThrows_ConstLiteralMember_DoNotUseInheritDoc()
+        public async Task AnalyzerThrows_ConstLiteralMember_DoNotUseValueForComment()
         {
             DocGptOptions.Instance.UseValueForLiteralConstants = false;
 
