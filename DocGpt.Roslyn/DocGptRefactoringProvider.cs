@@ -3,6 +3,7 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CodeRefactorings;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     using System;
     using System.Composition;
@@ -28,7 +29,14 @@
             SyntaxNode node = root.FindNode(textSpan);
             if (!DocGptExecutor.SupportedSyntaxes.Contains(node.Kind()))
             {
-                return;
+                if (node.Parent?.Parent is FieldDeclarationSyntax)
+                {
+                    node = node.Parent.Parent;
+                }
+                else
+                {
+                    return;
+                }
             }
 
             // Register a code action that will invoke the fix.

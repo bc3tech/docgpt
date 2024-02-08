@@ -72,7 +72,8 @@
                 completionOptions.Messages.Add(new ChatRequestUserMessage($@"You are to take the C# code below and create a valid XML Documentation summary block for it according to .NET specifications. Use the following steps to determine what you compute for the answer:
 
 1. If the given code is not a complete C# type or member declaration, stop computing and return nothing.
-2. If you're not able to discern the purpose of the code with reasonable certainty, just return `/// <summary />`
+2. If the declaration is a variable or field, your summary should attempt to discern what the variable may mean based on its name and - if assigned - its value. Don't include the ""gets or sets"" verbiage.
+3. If you're not able to discern the purpose of the code with reasonable certainty, just return `/// <summary />`
 
 ```csharp
 {code}
