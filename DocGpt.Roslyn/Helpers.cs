@@ -50,7 +50,7 @@
 
             // Skip field declarations that are not constants with a literal expression,
             // or if user has set the option to not document these.
-            if (IsConstantLiteral(node, out var parentField))
+            if (IsConstantLiteral(node, out _))
             {
                 return !DocGptOptions.Instance.UseValueForLiteralConstants;
             }
