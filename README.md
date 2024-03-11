@@ -52,6 +52,9 @@ Using the code fixer in a "fix all" scenario results in numerous back-to-back ca
 
 ## FAQ
 
+❓ Why would I use this over GitHub CoPilot? \
+With the added capabilities of CoPilot, yes, you can use it to document code members. However, it does not offer the Fix All behavior to fully document an entire project or solution.
+
 ❓ I don't see the fixer option for a member. Why? \
 The code fixer only shows if the options have been configured correctly. Make sure your endpoint URL is a valid full URL and that your API key is present.
 
