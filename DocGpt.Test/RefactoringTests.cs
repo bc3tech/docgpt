@@ -1,34 +1,23 @@
-﻿
-namespace DocGpt.Test
+﻿namespace DocGpt.Test;
+
+using System.Threading.Tasks;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using RefactorCS = CSharpCodeRefactoringVerifier<DocGptRefactoringProvider>;
+
+[TestClass]
+[Ignore("Manual activation required; needs live API execution")]
+public class RefactoringTests : RefactorCS.Test
 {
-    using DocGpt.Options;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-    using System.Threading.Tasks;
-
-    using RefactorCS = CSharpCodeRefactoringVerifier<DocGptRefactoringProvider>;
-
-    [TestClass]
-    [Ignore("Manual activation required; needs live API execution")]
-    public class RefactoringTests : RefactorCS.Test
+    /// <summary>
+    /// Analyzers the throws class decl.
+    /// </summary>
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task Refactor_Private_Member_Variable()
     {
-        [ClassInitialize]
-        public static void ClassInit()
-        {
-            //DocGptOptions.Instance.Endpoint = new("https://api.openai.com");
-            //DocGptOptions.Instance.ApiKey = "TODO";
-            //DocGptOptions.Instance.ModelDeploymentName = "gpt-3.5-turbo-16k";
-        }
-
-        /// <summary>
-        /// Analyzers the throws class decl.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task Refactor_Private_Member_Variable()
-        {
-            string test = @"
+        string test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +34,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            string fixd = @"
+        string fixd = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,17 +54,17 @@ namespace ConsoleApplication1
     }
 }";
 
-            await RefactorCS.VerifyRefactoringAsync(test, fixd);
-        }
+        await RefactorCS.VerifyRefactoringAsync(test, fixd);
+    }
 
-        /// <summary>
-        /// Analyzers the throws class decl.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task Refactor_Private_Member_Variable_Trigger_on_Name()
-        {
-            string test = @"
+    /// <summary>
+    /// Analyzers the throws class decl.
+    /// </summary>
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task Refactor_Private_Member_Variable_Trigger_on_Name()
+    {
+        string test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,7 +81,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            string fixd = @"
+        string fixd = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,7 +101,6 @@ namespace ConsoleApplication1
     }
 }";
 
-            await RefactorCS.VerifyRefactoringAsync(test, fixd);
-        }
+        await RefactorCS.VerifyRefactoringAsync(test, fixd);
     }
 }
