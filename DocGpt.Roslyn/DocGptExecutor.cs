@@ -1,6 +1,7 @@
 ﻿namespace DocGpt
 {
     using System;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -87,7 +88,7 @@ You are to give back only the XML documentation wrapped in a code block (```), d
                     var comment = completion.Value.Choices[0].Message.Content;
                     ExtractXmlDocComment(ref comment);
 
-                    SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
+                    SyntaxTriviaList commentTrivia = CreateTrivia(node, comment);
                     // Add the comment to the start of the node found by the analyzer
                     return (node.WithLeadingTrivia(commentTrivia), node);
                 }
@@ -105,6 +106,36 @@ You are to give back only the XML documentation wrapped in a code block (```), d
             {
                 return (node.WithLeadingTrivia(SyntaxFactory.Comment($"// Missing {e.ParamName} - Make sure you've entered the necessary information in Tools | Options | Doc GPT and try again.\r\n")), node);
             }
+        }
+
+        private static readonly Regex _lineFeedRegex = new Regex("(?<!\r)\n", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+        private static readonly Regex _crlfRegex = new Regex("\r\n", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+        private static SyntaxTriviaList CreateTrivia(SyntaxNode node, string comment)
+        {
+            // If the node's line endings are all crlf, make sure GPT's generated output ends in crlf as well
+            var nodeCurrentText = node.GetText().ToString();
+            var numLineFeeds = _lineFeedRegex.Matches(nodeCurrentText).Count;
+            var numCrLfs = _crlfRegex.Matches(nodeCurrentText).Count;
+
+            if (numLineFeeds > 0)
+            {
+                if (numCrLfs is 0)
+                {
+                    // if the node has only line feeds, make sure the comment ends in line feeds
+                    comment = _crlfRegex.Replace(comment, "\n");
+                }
+
+                // If the node already has mixed endings, don't do anything
+            }
+            else if (numCrLfs > 0)
+            {
+                // if the node has only crlfs, make sure the comment ends in crlfs
+                comment = _lineFeedRegex.Replace(comment, "\r\n");
+            }
+
+            return SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "Readability")]

@@ -1,12 +1,16 @@
 ﻿namespace DocGpt.Test;
 
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
 using DocGpt.Options;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using System;
-using System.Threading.Tasks;
 
 using VerifyCS = CSharpCodeFixVerifier<DocGptAnalyzer, DocGptCodeFixProvider>;
 
@@ -14,7 +18,7 @@ using VerifyCS = CSharpCodeFixVerifier<DocGptAnalyzer, DocGptCodeFixProvider>;
 /// The doc gpt unit test.
 /// </summary>
 [TestClass]
-public class CodeFixTests
+public partial class CodeFixTests
 {
     public TestContext TestContext { get; set; }
 
@@ -27,7 +31,7 @@ public class CodeFixTests
     {
         DocGptOptions.Instance.UseValueForLiteralConstants = true;
 
-        string test = @"
+        var test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +48,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        string fixd = @"
+        var fixd = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,28 +75,12 @@ namespace ConsoleApplication1
     /// </summary>
     /// <returns>A Task.</returns>
     [TestMethod]
+    [Ignore("Manual activation required; needs live API execution")]
     public async Task CodeFix_DGPT001_Constant_DoNotUseValue()
     {
         DocGptOptions.Instance.UseValueForLiteralConstants = false;
 
-        string test = @"
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-
-namespace ConsoleApplication1
-{
-    /// <summary></summary>
-    class MyClass
-    {
-        internal const string MyConst = ""Foo"";
-    }
-}";
-
-        string fixd = @"
+        var test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -110,14 +98,7 @@ namespace ConsoleApplication1
 }";
 
         DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(14, 31, 14, 38).WithArguments("FieldDeclaration", "MyConst");
-        try
-        {
-            await VerifyCS.VerifyCodeFixAsync(test, expected, fixd);
-        }
-        catch (Exception e)
-        {
-            Assert.IsInstanceOfType<Azure.RequestFailedException>(e);
-        }
+        await VerifyCS.VerifyGptDidSomethingAsync(expected, test);
     }
 
     /// <summary>
@@ -128,7 +109,7 @@ namespace ConsoleApplication1
     public async Task CodeFix_DGPT001_Override_UseInheritDoc()
     {
         DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.UseInheritDoc;
-        string test = @"
+        var test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -152,7 +133,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        string fixd = @"
+        var fixd = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -190,7 +171,7 @@ namespace ConsoleApplication1
     {
         DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.DoNotDocument;
 
-        string test = @"
+        var test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -214,7 +195,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        string fixd = @"
+        var fixd = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -251,31 +232,7 @@ namespace ConsoleApplication1
     {
         DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.GptSummarize;
 
-        string test = @"
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-
-namespace ConsoleApplication1
-{
-    /// <summary></summary>
-    class MyClass
-    {
-        /// <summary>Foo</summary>
-        protected virtual bool DoSomething() => true;
-    }
-
-    /// <summary></summary>
-    class MyDerivedClass : MyClass
-    {
-        protected override bool DoSomething() => false;
-    }
-}";
-
-        string fixd = @"
+        var test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -300,13 +257,44 @@ namespace ConsoleApplication1
 }";
 
         DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(21, 33, 21, 44).WithArguments("MethodDeclaration", "DoSomething");
-        try
-        {
-            await VerifyCS.VerifyCodeFixAsync(test, expected, fixd);
-        }
-        catch (Exception e)
-        {
-            Assert.IsInstanceOfType<Azure.RequestFailedException>(e);
-        }
+        await VerifyCS.VerifyGptDidSomethingAsync(expected, test);
     }
+
+    /// <summary>
+    /// https://github.com/bc3tech/docgpt/issues/2
+    /// </summary>
+    [TestMethod]
+    [Ignore("Manual activation required; needs live API execution")]
+    public async Task Issue_2_Conflicting_Line_Endings()
+    {
+        DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.GptSummarize;
+
+        var test = @"
+        protected override bool DoSomething() => false;
+";
+
+        SyntaxTree tree = CSharpSyntaxTree.ParseText(test);
+        Microsoft.CodeAnalysis.CSharp.Syntax.CompilationUnitSyntax testNode = tree.GetCompilationUnitRoot();
+        (SyntaxNode newNode, SyntaxNode _) = await DocGptExecutor.AddXmlDocumentationAsync(testNode, cancellationToken: default);
+
+        var newText = newNode.GetText().ToString();
+
+        Assert.AreEqual(0, LineFeedRegex().Matches(newText).Count, "There should be no LineFeed-only lines in the output, as there were none in the input. Output:\r\n{0}", newText);
+
+        test = "\nprotected override bool DoSomething() => false;\n";
+
+        tree = CSharpSyntaxTree.ParseText(test);
+        testNode = tree.GetCompilationUnitRoot();
+        (newNode, _) = await DocGptExecutor.AddXmlDocumentationAsync(testNode, cancellationToken: default);
+
+        newText = newNode.GetText().ToString();
+
+        Assert.AreEqual(0, CrLfRegex().Matches(newText).Count, "There should be no CrLf lines in the output, as there were none in the input. Output:\r\n{0}", newText);
+    }
+
+    [GeneratedRegex("(?<!\r)\n", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant)]
+    private static partial Regex LineFeedRegex();
+
+    [GeneratedRegex("\r\n$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant)]
+    private static partial Regex CrLfRegex();
 }
