@@ -1,15 +1,15 @@
 ﻿namespace DocGpt
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     using Azure.AI.OpenAI;
 
     using DocGpt.Options;
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
-
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     using static Helpers;
 
@@ -51,19 +51,19 @@
                 return (DecorateWithInheritDoc(node), node);
             }
 
-            if (IsConstantLiteral(node, out var parentField) && DocGptOptions.Instance.UseValueForLiteralConstants is true)
+            if (IsConstantLiteral(node, out Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax parentField) && DocGptOptions.Instance.UseValueForLiteralConstants is true)
             {
                 return (DecorateWithValueAsSummary(parentField), parentField);
             }
 
             // Get the body of the method
-            string code = node.GetText().ToString();
+            var code = node.GetText().ToString();
 
             try
             {
                 OpenAIClient client = DocGptOptions.Instance.GetClient();
 
-                ChatCompletionsOptions completionOptions = new ChatCompletionsOptions();
+                var completionOptions = new ChatCompletionsOptions();
                 if (!string.IsNullOrWhiteSpace(DocGptOptions.Instance.ModelDeploymentName))
                 {
                     completionOptions.DeploymentName = DocGptOptions.Instance.ModelDeploymentName;
@@ -84,7 +84,7 @@ You are to give back only the XML documentation wrapped in a code block (```), d
                 try
                 {
                     Azure.Response<ChatCompletions> completion = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
-                    string comment = completion.Value.Choices[0].Message.Content;
+                    var comment = completion.Value.Choices[0].Message.Content;
                     ExtractXmlDocComment(ref comment);
 
                     SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
@@ -107,6 +107,7 @@ You are to give back only the XML documentation wrapped in a code block (```), d
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "Readability")]
         internal static bool NodeTriggersGpt(SyntaxNode node)
         {
             if (HasOverrideModifier(node))
@@ -129,12 +130,12 @@ You are to give back only the XML documentation wrapped in a code block (```), d
         private static void ExtractXmlDocComment(ref string comment)
         {
             // if the comment is surrounded by code block markdown, remove it and any language specifier
-            int codeBlockLocation = comment.IndexOf("```", StringComparison.Ordinal);
+            var codeBlockLocation = comment.IndexOf("```", StringComparison.Ordinal);
             if (codeBlockLocation >= 0)
             {
                 comment = comment.Substring(codeBlockLocation + 3);
 
-                int idx = comment.IndexOf('\n');
+                var idx = comment.IndexOf('\n');
                 if (idx > 0)
                 {
                     comment = comment.Substring(idx + 1);

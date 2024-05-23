@@ -17,7 +17,7 @@ public class RefactoringTests : RefactorCS.Test
     [TestMethod]
     public async Task Refactor_Private_Member_Variable()
     {
-        string test = @"
+        var test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +34,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        string fixd = @"
+        var fixd = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,7 +64,7 @@ namespace ConsoleApplication1
     [TestMethod]
     public async Task Refactor_Private_Member_Variable_Trigger_on_Name()
     {
-        string test = @"
+        var test = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,7 +81,7 @@ namespace ConsoleApplication1
     }
 }";
 
-        string fixd = @"
+        var fixd = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;

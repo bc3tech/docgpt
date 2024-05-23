@@ -1,11 +1,11 @@
 ﻿namespace DocGpt.Vsix
 {
-    using Microsoft.VisualStudio.Shell;
-    using Microsoft.VisualStudio.Shell.Interop;
-
     using System;
     using System.Runtime.InteropServices;
     using System.Threading;
+
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
 
     using Task = System.Threading.Tasks.Task;
 
@@ -64,7 +64,7 @@
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            this.GetDialogPage(typeof(DocGptOptionsPage));
+            GetDialogPage(typeof(DocGptOptionsPage));
         }
 
         #endregion

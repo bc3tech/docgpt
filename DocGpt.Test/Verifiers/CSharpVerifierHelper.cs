@@ -1,10 +1,10 @@
 ﻿namespace DocGpt.Test;
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-
 using System;
 using System.Collections.Immutable;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 internal static class CSharpVerifierHelper
 {
@@ -20,8 +20,8 @@ internal static class CSharpVerifierHelper
     private static ImmutableDictionary<string, ReportDiagnostic> GetNullableWarningsFromCompiler()
     {
         string[] args = ["/warnaserror:nullable"];
-        var commandLineArguments = CSharpCommandLineParser.Default.Parse(args, baseDirectory: Environment.CurrentDirectory, sdkDirectory: Environment.CurrentDirectory);
-        var nullableWarnings = commandLineArguments.CompilationOptions.SpecificDiagnosticOptions;
+        CSharpCommandLineArguments commandLineArguments = CSharpCommandLineParser.Default.Parse(args, baseDirectory: Environment.CurrentDirectory, sdkDirectory: Environment.CurrentDirectory);
+        ImmutableDictionary<string, ReportDiagnostic> nullableWarnings = commandLineArguments.CompilationOptions.SpecificDiagnosticOptions;
 
         // Workaround for https://github.com/dotnet/roslyn/issues/41610
         nullableWarnings = nullableWarnings

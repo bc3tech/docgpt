@@ -1,11 +1,11 @@
 ﻿namespace DocGpt
 {
+    using System.Collections.Immutable;
+
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
-
-    using System.Collections.Immutable;
 
     using static Helpers;
 
@@ -27,7 +27,7 @@
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
 
         /// <inheritdoc />
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         /// <inheritdoc />
         public override void Initialize(AnalysisContext context)
@@ -41,14 +41,12 @@
             }
         }
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context) => AnalyzeNode(context, false);
-
         /// <summary>
         /// Analyzes the given syntax node.
         /// If XML documentation exists for the node, no diagnostic is reported.
         /// If no XML documentation is found, a diagnostic for missing XML documentation is created and reported.
         /// </summary>
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context, bool evented)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             SyntaxNode node = context.Node;
 
@@ -58,8 +56,8 @@
             }
 
             // Create and report the diagnostic
-            (Location loc, string name) = getLocationAndName();
-            Diagnostic diagnostic = Diagnostic.Create(Rule, loc, node.Kind(), name);
+            (Location loc, var name) = getLocationAndName();
+            var diagnostic = Diagnostic.Create(Rule, loc, node.Kind(), name);
             context.ReportDiagnostic(diagnostic);
 
             (Location, string) getLocationAndName()

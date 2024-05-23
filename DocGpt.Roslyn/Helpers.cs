@@ -1,12 +1,12 @@
 ﻿namespace DocGpt
 {
+    using System.Linq;
+
     using DocGpt.Options;
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-    using System.Linq;
 
     internal static class Helpers
     {
@@ -24,6 +24,7 @@
             return node.WithLeadingTrivia(commentTrivia);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "Readability")]
         public static bool ShouldSkip(SyntaxNode node)
         {
             // Skip nodes that already have XML documentation

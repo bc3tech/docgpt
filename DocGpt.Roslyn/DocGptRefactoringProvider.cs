@@ -1,15 +1,15 @@
 ﻿namespace DocGpt
 {
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeRefactorings;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-
     using System;
     using System.Composition;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CodeRefactorings;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
     /// The doc gpt code fix provider.

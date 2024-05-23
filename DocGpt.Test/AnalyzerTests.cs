@@ -1,11 +1,11 @@
 ﻿namespace DocGpt.Test;
 
+using System.Threading.Tasks;
+
 using DocGpt.Options;
 
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using System.Threading.Tasks;
 
 using VerifyCS = CSharpAnalyzerVerifier<DocGptAnalyzer>;
 
@@ -22,7 +22,7 @@ public class AnalyzerTests
     [TestMethod]
     public async Task AnalyzerPasses_BlankFile()
     {
-        string test = @"";
+        var test = @"";
 
         await VerifyCS.VerifyAnalyzerAsync(test, DiagnosticResult.EmptyDiagnosticResults);
     }
@@ -34,7 +34,7 @@ public class AnalyzerTests
     [TestMethod]
     public async Task AnalyzerPasses_DocumentedClass()
     {
-        string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -60,7 +60,7 @@ public class AnalyzerTests
     [TestMethod]
     public async Task AnalyzerThrows_ClassDecl()
     {
-        string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -88,7 +88,7 @@ public class AnalyzerTests
     {
         DocGptOptions.Instance.UseValueForLiteralConstants = true;
 
-        string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -118,7 +118,7 @@ public class AnalyzerTests
     {
         DocGptOptions.Instance.UseValueForLiteralConstants = false;
 
-        string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -148,7 +148,7 @@ public class AnalyzerTests
     {
         DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.UseInheritDoc;
 
-        string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -185,7 +185,7 @@ public class AnalyzerTests
     {
         DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.DoNotDocument;
 
-        string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
