@@ -1,37 +1,30 @@
-﻿namespace DocGpt.Test
+﻿namespace DocGpt.Test;
+
+using System.Threading;
+using System.Threading.Tasks;
+
+using Microsoft.CodeAnalysis.CodeRefactorings;
+using Microsoft.CodeAnalysis.Testing;
+
+public static partial class CSharpCodeRefactoringVerifier<TCodeRefactoring>
+    where TCodeRefactoring : CodeRefactoringProvider, new()
 {
-    using Microsoft.CodeAnalysis.CodeRefactorings;
-    using Microsoft.CodeAnalysis.Testing;
+    /// <inheritdoc cref="CodeRefactoringVerifier{TCodeRefactoring, TTest, TVerifier}.VerifyRefactoringAsync(string, string)"/>
+    public static async Task VerifyRefactoringAsync(string source, string fixedSource) => await VerifyRefactoringAsync(source, DiagnosticResult.EmptyDiagnosticResults, fixedSource);
 
-    using System.Threading;
-    using System.Threading.Tasks;
+    /// <inheritdoc cref="CodeRefactoringVerifier{TCodeRefactoring, TTest, TVerifier}.VerifyRefactoringAsync(string, DiagnosticResult, string)"/>
+    public static async Task VerifyRefactoringAsync(string source, DiagnosticResult expected, string fixedSource) => await VerifyRefactoringAsync(source, [expected], fixedSource);
 
-    public static partial class CSharpCodeRefactoringVerifier<TCodeRefactoring>
-        where TCodeRefactoring : CodeRefactoringProvider, new()
+    /// <inheritdoc cref="CodeRefactoringVerifier{TCodeRefactoring, TTest, TVerifier}.VerifyRefactoringAsync(string, DiagnosticResult[], string)"/>
+    public static async Task VerifyRefactoringAsync(string source, DiagnosticResult[] expected, string fixedSource)
     {
-        /// <inheritdoc cref="CodeRefactoringVerifier{TCodeRefactoring, TTest, TVerifier}.VerifyRefactoringAsync(string, string)"/>
-        public static async Task VerifyRefactoringAsync(string source, string fixedSource)
+        var test = new Test
         {
-            await VerifyRefactoringAsync(source, DiagnosticResult.EmptyDiagnosticResults, fixedSource);
-        }
+            TestCode = source,
+            FixedCode = fixedSource,
+        };
 
-        /// <inheritdoc cref="CodeRefactoringVerifier{TCodeRefactoring, TTest, TVerifier}.VerifyRefactoringAsync(string, DiagnosticResult, string)"/>
-        public static async Task VerifyRefactoringAsync(string source, DiagnosticResult expected, string fixedSource)
-        {
-            await VerifyRefactoringAsync(source, [expected], fixedSource);
-        }
-
-        /// <inheritdoc cref="CodeRefactoringVerifier{TCodeRefactoring, TTest, TVerifier}.VerifyRefactoringAsync(string, DiagnosticResult[], string)"/>
-        public static async Task VerifyRefactoringAsync(string source, DiagnosticResult[] expected, string fixedSource)
-        {
-            var test = new Test
-            {
-                TestCode = source,
-                FixedCode = fixedSource,
-            };
-
-            test.ExpectedDiagnostics.AddRange(expected);
-            await test.RunAsync(CancellationToken.None);
-        }
+        test.ExpectedDiagnostics.AddRange(expected);
+        await test.RunAsync(CancellationToken.None);
     }
 }

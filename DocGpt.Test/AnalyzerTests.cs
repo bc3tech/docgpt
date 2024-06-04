@@ -1,40 +1,40 @@
-﻿namespace DocGpt.Test
+﻿namespace DocGpt.Test;
+
+using System.Threading.Tasks;
+
+using DocGpt.Options;
+
+using Microsoft.CodeAnalysis.Testing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using VerifyCS = CSharpAnalyzerVerifier<DocGptAnalyzer>;
+
+/// <summary>
+/// The doc gpt unit test.
+/// </summary>
+[TestClass]
+public class AnalyzerTests
 {
-    using DocGpt.Options;
+    /// <summary>
+    /// Analyzer the does not throw.
+    /// </summary>
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task AnalyzerPasses_BlankFile()
+    {
+        var test = @"";
 
-    using Microsoft.CodeAnalysis.Testing;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-    using System.Threading.Tasks;
-
-    using VerifyCS = CSharpAnalyzerVerifier<DocGptAnalyzer>;
+        await VerifyCS.VerifyAnalyzerAsync(test, DiagnosticResult.EmptyDiagnosticResults);
+    }
 
     /// <summary>
-    /// The doc gpt unit test.
+    /// Analyzer the does not throw.
     /// </summary>
-    [TestClass]
-    public class AnalyzerTests
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task AnalyzerPasses_DocumentedClass()
     {
-        /// <summary>
-        /// Analyzer the does not throw.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task AnalyzerPasses_BlankFile()
-        {
-            string test = @"";
-
-            await VerifyCS.VerifyAnalyzerAsync(test, DiagnosticResult.EmptyDiagnosticResults);
-        }
-
-        /// <summary>
-        /// Analyzer the does not throw.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task AnalyzerPasses_DocumentedClass()
-        {
-            string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -50,17 +50,17 @@
         }
     }";
 
-            await VerifyCS.VerifyAnalyzerAsync(test, DiagnosticResult.EmptyDiagnosticResults);
-        }
+        await VerifyCS.VerifyAnalyzerAsync(test, DiagnosticResult.EmptyDiagnosticResults);
+    }
 
-        /// <summary>
-        /// Test method2.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task AnalyzerThrows_ClassDecl()
-        {
-            string test = @"
+    /// <summary>
+    /// Test method2.
+    /// </summary>
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task AnalyzerThrows_ClassDecl()
+    {
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -75,20 +75,20 @@
         }
     }";
 
-            DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(11, 15, 11, 22).WithArguments("ClassDeclaration", "MyClass");
-            await VerifyCS.VerifyAnalyzerAsync(test, expected);
-        }
+        DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(11, 15, 11, 22).WithArguments("ClassDeclaration", "MyClass");
+        await VerifyCS.VerifyAnalyzerAsync(test, expected);
+    }
 
-        /// <summary>
-        /// Test method2.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task AnalyzerThrows_ConstLiteralMember_UseValueForComment()
-        {
-            DocGptOptions.Instance.UseValueForLiteralConstants = true;
+    /// <summary>
+    /// Test method2.
+    /// </summary>
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task AnalyzerThrows_ConstLiteralMember_UseValueForComment()
+    {
+        DocGptOptions.Instance.UseValueForLiteralConstants = true;
 
-            string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -105,20 +105,20 @@
         }
     }";
 
-            DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(14, 35, 14, 42).WithArguments("FieldDeclaration", "MyConst");
-            await VerifyCS.VerifyAnalyzerAsync(test, expected);
-        }
+        DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(14, 35, 14, 42).WithArguments("FieldDeclaration", "MyConst");
+        await VerifyCS.VerifyAnalyzerAsync(test, expected);
+    }
 
-        /// <summary>
-        /// Test method2.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task AnalyzerThrows_ConstLiteralMember_DoNotUseValueForComment()
-        {
-            DocGptOptions.Instance.UseValueForLiteralConstants = false;
+    /// <summary>
+    /// Test method2.
+    /// </summary>
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task AnalyzerThrows_ConstLiteralMember_DoNotUseValueForComment()
+    {
+        DocGptOptions.Instance.UseValueForLiteralConstants = false;
 
-            string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -135,20 +135,20 @@
         }
     }";
 
-            DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(14, 35, 14, 42).WithArguments("FieldDeclaration", "MyConst");
-            await VerifyCS.VerifyAnalyzerAsync(test, expected);
-        }
+        DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(14, 35, 14, 42).WithArguments("FieldDeclaration", "MyConst");
+        await VerifyCS.VerifyAnalyzerAsync(test, expected);
+    }
 
-        /// <summary>
-        /// Test method2.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task AnalyzerThrows_Override_InheritDoc()
-        {
-            DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.UseInheritDoc;
+    /// <summary>
+    /// Test method2.
+    /// </summary>
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task AnalyzerThrows_Override_InheritDoc()
+    {
+        DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.UseInheritDoc;
 
-            string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -172,20 +172,20 @@
         }
     }";
 
-            DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(21, 37, 21, 40).WithArguments("MethodDeclaration", "Foo");
-            await VerifyCS.VerifyAnalyzerAsync(test, expected);
-        }
+        DiagnosticResult expected = VerifyCS.Diagnostic(DocGptAnalyzer.Rule).WithSpan(21, 37, 21, 40).WithArguments("MethodDeclaration", "Foo");
+        await VerifyCS.VerifyAnalyzerAsync(test, expected);
+    }
 
-        /// <summary>
-        /// Test method2.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        [TestMethod]
-        public async Task AnalyzerPasses_Override_DoNotDocument()
-        {
-            DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.DoNotDocument;
+    /// <summary>
+    /// Test method2.
+    /// </summary>
+    /// <returns>A Task.</returns>
+    [TestMethod]
+    public async Task AnalyzerPasses_Override_DoNotDocument()
+    {
+        DocGptOptions.Instance.OverridesBehavior = OverrideBehavior.DoNotDocument;
 
-            string test = @"
+        var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -209,7 +209,6 @@
         }
     }";
 
-            await VerifyCS.VerifyAnalyzerAsync(test, DiagnosticResult.EmptyDiagnosticResults);
-        }
+        await VerifyCS.VerifyAnalyzerAsync(test, DiagnosticResult.EmptyDiagnosticResults);
     }
 }

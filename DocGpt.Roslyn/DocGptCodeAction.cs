@@ -1,12 +1,12 @@
 ﻿namespace DocGpt
 {
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeActions;
-    using Microsoft.CodeAnalysis.Formatting;
-
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CodeActions;
+    using Microsoft.CodeAnalysis.Formatting;
 
     using Document = Microsoft.CodeAnalysis.Document;
 
@@ -56,7 +56,7 @@
             SyntaxNode root = await _doc.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode node = root.FindNode(diagnosticSpan);
 
-            var (newNode, nodeToReplace) = await DocGptExecutor.AddXmlDocumentationAsync(node, cancellationToken);
+            (SyntaxNode newNode, SyntaxNode nodeToReplace) = await DocGptExecutor.AddXmlDocumentationAsync(node, cancellationToken);
 
             SyntaxNode newRoot = root.ReplaceNode(nodeToReplace, newNode);
 
@@ -82,7 +82,7 @@
             public override string Title { get; } = "Sends this entire member's definition (and body) to the defined OpenAI endpoint for summary text generation and applies the result.";
 
             /// <inheritdoc />
-            public override Task<object> GetPreviewAsync(CancellationToken cancellationToken) => Task.FromResult<object>(Title);
+            public override Task<object> GetPreviewAsync(CancellationToken cancellationToken) => Task.FromResult<object>(this.Title);
         }
     }
 }

@@ -1,15 +1,16 @@
 ﻿namespace DocGpt
 {
+    using System;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     using Azure.AI.OpenAI;
 
     using DocGpt.Options;
 
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
-
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     using static Helpers;
 
@@ -51,19 +52,19 @@
                 return (DecorateWithInheritDoc(node), node);
             }
 
-            if (IsConstantLiteral(node, out var parentField) && DocGptOptions.Instance.UseValueForLiteralConstants is true)
+            if (IsConstantLiteral(node, out Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax parentField) && DocGptOptions.Instance.UseValueForLiteralConstants is true)
             {
                 return (DecorateWithValueAsSummary(parentField), parentField);
             }
 
             // Get the body of the method
-            string code = node.GetText().ToString();
+            var code = node.GetText().ToString();
 
             try
             {
                 OpenAIClient client = DocGptOptions.Instance.GetClient();
 
-                ChatCompletionsOptions completionOptions = new ChatCompletionsOptions();
+                var completionOptions = new ChatCompletionsOptions();
                 if (!string.IsNullOrWhiteSpace(DocGptOptions.Instance.ModelDeploymentName))
                 {
                     completionOptions.DeploymentName = DocGptOptions.Instance.ModelDeploymentName;
@@ -84,10 +85,10 @@ You are to give back only the XML documentation wrapped in a code block (```), d
                 try
                 {
                     Azure.Response<ChatCompletions> completion = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
-                    string comment = completion.Value.Choices[0].Message.Content;
+                    var comment = completion.Value.Choices[0].Message.Content;
                     ExtractXmlDocComment(ref comment);
 
-                    SyntaxTriviaList commentTrivia = SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
+                    SyntaxTriviaList commentTrivia = CreateTrivia(node, comment);
                     // Add the comment to the start of the node found by the analyzer
                     return (node.WithLeadingTrivia(commentTrivia), node);
                 }
@@ -107,6 +108,37 @@ You are to give back only the XML documentation wrapped in a code block (```), d
             }
         }
 
+        private static readonly Regex _lineFeedRegex = new Regex("(?<!\r)\n", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+        private static readonly Regex _crlfRegex = new Regex("\r\n", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+        private static SyntaxTriviaList CreateTrivia(SyntaxNode node, string comment)
+        {
+            // If the node's line endings are all crlf, make sure GPT's generated output ends in crlf as well
+            var nodeCurrentText = node.GetText().ToString();
+            var numLineFeeds = _lineFeedRegex.Matches(nodeCurrentText).Count;
+            var numCrLfs = _crlfRegex.Matches(nodeCurrentText).Count;
+
+            if (numLineFeeds > 0)
+            {
+                if (numCrLfs is 0)
+                {
+                    // if the node has only line feeds, make sure the comment ends in line feeds
+                    comment = _crlfRegex.Replace(comment, "\n");
+                }
+
+                // If the node already has mixed endings, don't do anything
+            }
+            else if (numCrLfs > 0)
+            {
+                // if the node has only crlfs, make sure the comment ends in crlfs
+                comment = _lineFeedRegex.Replace(comment, "\r\n");
+            }
+
+            return SyntaxFactory.ParseLeadingTrivia(comment).InsertRange(0, node.GetLeadingTrivia());
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "Readability")]
         internal static bool NodeTriggersGpt(SyntaxNode node)
         {
             if (HasOverrideModifier(node))
@@ -129,12 +161,12 @@ You are to give back only the XML documentation wrapped in a code block (```), d
         private static void ExtractXmlDocComment(ref string comment)
         {
             // if the comment is surrounded by code block markdown, remove it and any language specifier
-            int codeBlockLocation = comment.IndexOf("```", StringComparison.Ordinal);
+            var codeBlockLocation = comment.IndexOf("```", StringComparison.Ordinal);
             if (codeBlockLocation >= 0)
             {
                 comment = comment.Substring(codeBlockLocation + 3);
 
-                int idx = comment.IndexOf('\n');
+                var idx = comment.IndexOf('\n');
                 if (idx > 0)
                 {
                     comment = comment.Substring(idx + 1);

@@ -1,12 +1,12 @@
 ﻿namespace DocGpt.Vsix
 {
-    using DocGpt.Options;
-
-    using Microsoft.VisualStudio.Shell;
-
     using System;
     using System.ComponentModel;
     using System.Runtime.InteropServices;
+
+    using DocGpt.Options;
+
+    using Microsoft.VisualStudio.Shell;
 
     /// <summary>
     /// The doc gpt options page.
@@ -25,7 +25,7 @@
         [Category("OpenAI Configuration")]
         [DisplayName("Endpoint URL")]
         [Description("The OpenAI or Azure OpenAI endpoint url.")]
-        public string Endpoint { get => _options.Endpoint?.OriginalString; set => _options.Endpoint = Uri.TryCreate(value, UriKind.Absolute, out var r) ? r : null; }
+        public string Endpoint { get => _options.Endpoint?.OriginalString; set => _options.Endpoint = Uri.TryCreate(value, UriKind.Absolute, out Uri r) ? r : null; }
 
         /// <summary>
         /// Gets or Sets the api key.

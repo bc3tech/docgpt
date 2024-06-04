@@ -1,8 +1,8 @@
 ﻿namespace DocGpt.Options
 {
-    using Azure.AI.OpenAI;
-
     using System;
+
+    using Azure.AI.OpenAI;
 
     /// <summary>
     /// Represents the configuration options for an OpenAI or Azure-based OpenAI service.
@@ -68,8 +68,8 @@
             {
                 _client =
                     _endpoint.Host.EndsWith("azure.com", StringComparison.OrdinalIgnoreCase)
-                    ? new OpenAIClient(_endpoint ?? throw new ArgumentNullException(nameof(Endpoint)), new Azure.AzureKeyCredential(_apiKey ?? throw new ArgumentNullException(nameof(ApiKey))))
-                    : new OpenAIClient(_apiKey ?? throw new ArgumentNullException(nameof(ApiKey)));
+                    ? new OpenAIClient(_endpoint ?? throw new ArgumentNullException(nameof(this.Endpoint)), new Azure.AzureKeyCredential(_apiKey ?? throw new ArgumentNullException(nameof(this.ApiKey))))
+                    : new OpenAIClient(_apiKey ?? throw new ArgumentNullException(nameof(this.ApiKey)));
             }
 
             return _client;
