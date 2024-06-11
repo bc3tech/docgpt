@@ -1,0 +1,38 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+        with:
+          vs-version: 17.0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Restore NuGet packages
+        run: nuget restore ./DocGpt.sln
+
+      - name: Run unit tests
+        run: dotnet test ./DocGpt.Test/DocGpt.Test.csproj --configuration Release
+      
+      - name: Build Extension
+        run: msbuild ./DocGpt.sln -p:Configuration=Release -t:Rebuild
