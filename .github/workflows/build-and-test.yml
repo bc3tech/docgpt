@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Add msbuild to PATH
+      - name: Setup MSBuild for NetFX
         uses: microsoft/setup-msbuild@v2
         with:
           vs-version: 17.0
@@ -22,6 +22,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
+      
+      - name: Install sign tool
+        run: dotnet tool install --tool-path ./sign sign
 
       - name: Checkout code
         uses: actions/checkout@v4
