@@ -59,11 +59,27 @@ jobs:
       - name: Build Extension
         run: msbuild .\DocGpt.sln -p:Configuration=Release
 
-      - name: Sign Extension
-        run: lib\win\openvsixsigntool.exe sign -t "http://timestamp.digicert.com" ".\DocGpt.Vsix\bin\Release\DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
-
-      - name: Publish Artifact
+      - name: Store unsigned artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DocGPT.vsix
+          name: DocGPT-unsigned.vsix
+          path: DocGpt.Vsix\bin\Release\DocGPT.vsix
+  sign-extension:
+    needs: package-extension
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DocGPT-unsigned.vsix
+          path: ./DocGPT.vsix
+
+      - name: Sign Extension
+        run: lib/linux/openvsixsigntool sign -t "http://timestamp.digicert.com" "./DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
+
+      - name: Publish signed artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DocGPT-signed.vsix
           path: DocGpt.Vsix\bin\Release\DocGPT.vsix
