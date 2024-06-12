@@ -23,9 +23,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-      
-      - name: Install sign tool
-        run: dotnet tool install --tool-path ./sign sign
 
       - name: Checkout code
         uses: actions/checkout@v4
