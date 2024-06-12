@@ -1,14 +1,28 @@
 ﻿
 # Doc GPT
 
-| [![Repo health indicator](https://img.shields.io/github/check-runs/bc3tech/docgpt/main?style=for-the-badge)](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml) |
-|----------------|
-[![Visual Studio Marketplace Version (Click to download)](https://img.shields.io/visual-studio-marketplace/v/bc3tech.net-bc3tech-docgpt?style=for-the-badge&logo=visualstudioappcenter&label=Latest%20Version)](https://marketplace.visualstudio.com/items?itemName=bc3tech.net-bc3tech-docgpt)
-![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
-![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
-![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
-| |
+<table>
+<tr>
+<th colspan=2 style="text-align: center">
 
+[![Repo health indicator](https://img.shields.io/github/check-runs/bc3tech/docgpt/main?style=for-the-badge)](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml)
+</th>
+</tr><tr>
+<td style="text-align: right">
+
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/bc3tech.net-bc3tech-docgpt?style=for-the-badge&logo=visualstudioappcenter&label=Latest%20Version)](https://marketplace.visualstudio.com/items?itemName=bc3tech.net-bc3tech-docgpt)
+</td><td>
+
+![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
+</td>
+</tr><tr>
+<td style="text-align: right">
+
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
+</td><td>
+
+![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
+</td></tr></table>
 
 A Visual Studio extension to quickly and easily document your code using LLMs.
 
