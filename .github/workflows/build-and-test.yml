@@ -7,6 +7,9 @@ on:
   workflow_dispatch:
   workflow_call:
 
+env:
+  EXTENSION_VERSION: 1.0.${{ github.run_number }}
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -47,6 +50,8 @@ jobs:
           $identityNode = $xml.PackageManifest.Metadata.Identity
           $identityNode.SetAttribute('Version', $env:EXTENSION_VERSION)
           $xml.Save(".\DocGpt.Vsix\source.extension.vsixmanifest")
+
+          echo "extVersion::$env:EXTENSION_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Restore NuGet packages
         run: nuget restore .\DocGpt.sln

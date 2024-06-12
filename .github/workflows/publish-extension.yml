@@ -6,9 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  EXTENSION_VERSION: 1.0.${{ github.run_number }}
-
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yml
@@ -16,6 +13,8 @@ jobs:
   publish-to-marketplace:
     needs: build-and-test
     runs-on: ubuntu-latest
+    env:
+        EXTENSION_VERSION: ${{ needs.build-and-test.outputs.extVersion }}
 
     steps:
       - name: Download artifact
