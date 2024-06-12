@@ -1,7 +1,7 @@
 ﻿
 # Doc GPT
 
-Repo Health: [![Repo health indicator](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml)
+[![Repo health indicator](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml)
 
 A Visual Studio extension to quickly and easily document your code using LLMs.
 
