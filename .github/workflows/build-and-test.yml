@@ -88,6 +88,7 @@ jobs:
   publish-release:
     needs: [run-tests, package-extension]
     runs-on: ubuntu-latest
+    permissions: write-all
 
     steps:
       - name: Create Release
