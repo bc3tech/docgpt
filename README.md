@@ -1,4 +1,7 @@
-﻿# Doc GPT
+﻿
+# Doc GPT
+
+Repo Health: [![Repo health indicator](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml)
 
 A Visual Studio extension to quickly and easily document your code using LLMs.
 
@@ -7,6 +10,7 @@ A Visual Studio extension to quickly and easily document your code using LLMs.
 - Install the extension **free** from [the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=bc3tech.net-bc3tech-docgpt) or from within Visual Studio's extension manager
 
 ## Configuration
+
 - Set up the endpoint for your OpenAI model in the extension's settings
   ![VS Options panel for Doc GPT](docs/img/options_panel.png)
 
