@@ -9,6 +9,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  EXTENSION_VERSION: 1.0.${{ github.run_number }}
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -44,13 +47,10 @@ jobs:
 
       - name: Bump version
         run: |
-          # Set version number as '1.0.<gh workflow run number>'
-          $NEW_VERSION = "1.0.$env:GITHUB_RUN_NUMBER"
-
           # Use PowerShell to update the version in the VSIX manifest
           $xml = [xml](Get-Content -Path .\DocGpt.Vsix\source.extension.vsixmanifest)
           $identityNode = $xml.PackageManifest.Metadata.Identity
-          $identityNode.SetAttribute('Version', $NEW_VERSION)
+          $identityNode.SetAttribute('Version', $env:EXTENSION_VERSION)
           $xml.Save(".\DocGpt.Vsix\source.extension.vsixmanifest")
 
       - name: Restore NuGet packages
@@ -84,3 +84,17 @@ jobs:
           extension-file: ./DocGPT.vsix
           personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
           publish-manifest-file: ./DocGpt.Vsix/publishmanifest.json
+
+  publish-release:
+    needs: [run-tests, package-extension]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        run: |
+          gh release create "${{ github.sha }}" \
+            --repo="${{ github.repository }}" \
+            --title="v${{ env.EXTENSION_VERSION }}" \
+            --generate-notes
