@@ -1,16 +1,11 @@
 name: Build and Test
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
   workflow_dispatch:
-
-env:
-  EXTENSION_VERSION: 1.0.${{ github.run_number }}
+  workflow_call:
 
 jobs:
   run-tests:
@@ -67,50 +62,3 @@ jobs:
         with:
           name: DocGPT.vsix
           path: DocGpt.Vsix\bin\Release\DocGPT.vsix
-
-  publish-to-marketplace:
-    needs: [run-tests, package-extension]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: DocGPT.vsix
-          path: ./DocGPT.vsix
-
-      - name: Publish to marketplace
-        uses: cezarypiatek/VsixPublisherAction@1.1
-        with:
-          extension-file: ./DocGPT.vsix
-          publish-manifest-file: ./DocGpt.Vsix/publishmanifest.json
-          personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
-
-  publish-release:
-    needs: [run-tests, package-extension]
-    runs-on: ubuntu-latest
-    permissions: write-all
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: DocGPT.vsix
-          path: ./DocGPT.vsix
-
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        run: |
-          gh release create --target "${{ github.sha }}" \
-            --title "v${{ env.EXTENSION_VERSION }}" \
-            --generate-notes
-            --draft
-      
-      - name: Upload Release Asset
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        run: |
-          gh release upload "v${{ env.EXTENSION_VERSION }}" \
-            --file ./DocGPT.vsix#Installer \
-            --clobber 
