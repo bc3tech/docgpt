@@ -30,13 +30,26 @@ jobs:
           show-progress: false
 
       - name: Restore NuGet packages
-        run: nuget restore ./DocGpt.sln
+        run: nuget restore .\DocGpt.sln
 
       - name: Run unit tests
-        run: dotnet test ./DocGpt.Test/DocGpt.Test.csproj --configuration Release
+        run: dotnet test .\DocGpt.Test\DocGpt.Test.csproj --configuration Release
       
       - name: Build Extension
-        run: msbuild ./DocGpt.sln -p:Configuration=Release
+        run: msbuild .\DocGpt.sln -p:Configuration=Release
 
       - name: Sign Extension
         run: lib\win\openvsixsigntool.exe sign -t "http://timestamp.digicert.com" ".\DocGpt.Vsix\bin\Release\DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: DocGpt.vsix
+          path: DocGpt.Vsix\bin\Release\DocGPT.vsix
+
+      - name: Publish to marketplace
+        uses: cezarypiatek/VsixPublisherAction@1.1
+        with:
+          extension-file: .\DocGpt.Vsix\bin\Release\DocGPT.vsix
+          personal-access-code: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          publish-manifest-file: .\DocGpt.Vsix\publishmanifest.json
