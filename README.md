@@ -1,7 +1,14 @@
 ﻿
 # Doc GPT
 
-[![Repo health indicator](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml)
+| [![Repo health indicator](https://img.shields.io/github/check-runs/bc3tech/docgpt/main?style=for-the-badge)](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml) |
+|----------------|
+[![Visual Studio Marketplace Version (Click to download)](https://img.shields.io/visual-studio-marketplace/v/bc3tech.net-bc3tech-docgpt?style=for-the-badge&logo=visualstudioappcenter&label=Latest%20Version)](https://marketplace.visualstudio.com/items?itemName=bc3tech.net-bc3tech-docgpt)
+![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
+![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
+| |
+
 
 A Visual Studio extension to quickly and easily document your code using LLMs.
 
