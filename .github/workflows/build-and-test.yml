@@ -36,7 +36,7 @@ jobs:
         run: dotnet test ./DocGpt.Test/DocGpt.Test.csproj --configuration Release
       
       - name: Build Extension
-        run: msbuild ./DocGpt.sln -p:Configuration=Release -t:Rebuild
+        run: msbuild ./DocGpt.sln -p:Configuration=Release
 
       - name: Sign Extension
         run: lib\win\openvsixsigntool.exe sign -t "http://timestamp.digicert.com" ".\DocGpt.Vsix\bin\Release\DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
