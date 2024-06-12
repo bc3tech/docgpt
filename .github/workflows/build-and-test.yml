@@ -10,15 +10,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
-    runs-on: windows-latest
+  run-tests:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Setup MSBuild for NetFX
-        uses: microsoft/setup-msbuild@v2
-        with:
-          vs-version: 17.0
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -29,22 +24,38 @@ jobs:
         with:
           show-progress: false
 
-      - name: Restore NuGet packages
-        run: nuget restore .\DocGpt.sln
-
       - name: Run unit tests
-        run: dotnet test .\DocGpt.Test\DocGpt.Test.csproj --configuration Release
-      
+        run: dotnet test ./DocGpt.Test/DocGpt.Test.csproj --configuration Release
+
+  package-extension:
+    # VS extension packaging requires netfx, so have to run it on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Setup MSBuild for NetFX
+        uses: microsoft/setup-msbuild@v2
+        with:
+          vs-version: 17.0
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+  
       - name: Bump version
         run: |
           # Set version number as '1.0.<gh workflow run number>'
           $NEW_VERSION = "1.0.$env:GITHUB_RUN_NUMBER"
 
           # Use PowerShell to update the version in the VSIX manifest
-          $xml = xml
-          $xml.SelectSingleNode('//Version').InnerText = $NEW_VERSION
-          $xml.OuterXml | Set-Content -Path .\DocGpt.Vsix\source.extension.vsixmanifest
+          $xml = [xml](Get-Content -Path .\DocGpt.Vsix\source.extension.vsixmanifest)
+          $identityNode = $xml.PackageManifest.Metadata.Identity
+          $identityNode.SetAttribute('Version', $NEW_VERSION)
+          $xml.Save(".\DocGpt.Vsix\source.extension.vsixmanifest")
 
+      - name: Restore NuGet packages
+        run: nuget restore .\DocGpt.sln
+  
       - name: Build Extension
         run: msbuild .\DocGpt.sln -p:Configuration=Release
 
@@ -52,14 +63,24 @@ jobs:
         run: lib\win\openvsixsigntool.exe sign -t "http://timestamp.digicert.com" ".\DocGpt.Vsix\bin\Release\DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
 
       - name: Publish Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: DocGpt.vsix
           path: DocGpt.Vsix\bin\Release\DocGPT.vsix
 
-      # - name: Publish to marketplace
-      #   uses: cezarypiatek/VsixPublisherAction@1.1
-      #   with:
-      #     extension-file: .\DocGpt.Vsix\bin\Release\DocGPT.vsix
-      #     personal-access-code: ${{ secrets.VS_MARKETPLACE_TOKEN }}
-      #     publish-manifest-file: .\DocGpt.Vsix\publishmanifest.json
+  publish-to-marketplace:
+    needs: package-extension
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DocGPT.vsix
+          path: ./DocGPT.vsix
+      - name: Publish to marketplace
+        uses: cezarypiatek/VsixPublisherAction@1
+        with:
+          extension-file: ./DocGPT.vsix
+          personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
+          publish-manifest-file: ./DocGpt.Vsix/publishmanifest.json
