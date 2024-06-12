@@ -1,0 +1,57 @@
+name: Publish Extension
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  EXTENSION_VERSION: 1.0.${{ github.run_number }}
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-and-test.yml
+
+  publish-to-marketplace:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DocGPT.vsix
+          path: ./DocGPT.vsix
+
+      - name: Publish to marketplace
+        uses: cezarypiatek/VsixPublisherAction@1.1
+        with:
+          extension-file: ./DocGPT.vsix
+          publish-manifest-file: ./DocGpt.Vsix/publishmanifest.json
+          personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
+
+  publish-release:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DocGPT.vsix
+          path: ./DocGPT.vsix
+
+      - name: Create Release
+        run: |
+          gh release create --target "${{ github.sha }}" \
+          --title "v${{ env.EXTENSION_VERSION }}" \
+          --generate-notes
+          --draft
+
+      - name: Upload Release Asset
+        run: |
+          gh release upload "v${{ env.EXTENSION_VERSION }}" \
+          --file ./DocGPT.vsix#Installer \
+          --clobber
