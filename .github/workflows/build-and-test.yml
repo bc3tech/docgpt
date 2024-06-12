@@ -79,11 +79,11 @@ jobs:
           name: DocGPT.vsix
           path: ./DocGPT.vsix
       - name: Publish to marketplace
-        uses: cezarypiatek/VsixPublisherAction@v1
+        uses: cezarypiatek/VsixPublisherAction@1.1
         with:
           extension-file: ./DocGPT.vsix
-          personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
           publish-manifest-file: ./DocGpt.Vsix/publishmanifest.json
+          personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
 
   publish-release:
     needs: [run-tests, package-extension]
