@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -39,3 +40,6 @@ jobs:
       
       - name: Build Extension
         run: msbuild ./DocGpt.sln -p:Configuration=Release -t:Rebuild
+
+      - name: Sign Extension
+        run: lib/win/openvsixsigntool.exe sign -t "http://timestamp.digicert.com" ".\DocGpt.Vsix\bin\Release\DocGPT.vsix" -kvu "https://${{ secret.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secret.AZURE_TENANT_ID }}" -kvi "${{ secret.AZURE_CLIENT_ID }}" -kvs "${{ secret.AZURE_CLIENT_SECRET }}" -kvc "${{ secret.SIGNING_CERTIFICATE_NAME }}"
