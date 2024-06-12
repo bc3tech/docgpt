@@ -42,4 +42,4 @@ jobs:
         run: msbuild ./DocGpt.sln -p:Configuration=Release -t:Rebuild
 
       - name: Sign Extension
-        run: lib/win/openvsixsigntool.exe sign -t "http://timestamp.digicert.com" ".\DocGpt.Vsix\bin\Release\DocGPT.vsix" -kvu "https://${{ secret.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secret.AZURE_TENANT_ID }}" -kvi "${{ secret.AZURE_CLIENT_ID }}" -kvs "${{ secret.AZURE_CLIENT_SECRET }}" -kvc "${{ secret.SIGNING_CERTIFICATE_NAME }}"
+        run: lib\win\openvsixsigntool.exe sign -t "http://timestamp.digicert.com" ".\DocGpt.Vsix\bin\Release\DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
