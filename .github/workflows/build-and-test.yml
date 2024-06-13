@@ -76,7 +76,7 @@ jobs:
           path: ./DocGPT.vsix
 
       - name: Sign Extension
-        run: lib/linux/openvsixsigntool sign -t "http://timestamp.digicert.com" "./DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
+        run: lib/linux/OpenVsixSignTool sign -t "http://timestamp.digicert.com" "./DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
 
       - name: Publish signed artifact
         uses: actions/upload-artifact@v4

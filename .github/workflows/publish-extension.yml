@@ -9,6 +9,7 @@ on:
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yml
+    secrets: inherit
 
   publish-to-marketplace:
     needs: build-and-test
