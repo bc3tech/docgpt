@@ -34,13 +34,17 @@ jobs:
       - name: Show manifest
         run: |
           cat DocGpt.Vsix/publishmanifest.json
-          
+
       - name: Publish to marketplace
-        uses: cezarypiatek/VsixPublisherAction@1.1
-        with:
-          extension-file: .\o\DocGPT.vsix
-          publish-manifest-file: .\DocGpt.Vsix\publishmanifest.json
-          personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
+        run: |
+          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VSSDK\VisualStudioIntegration\Tools\Bin\VsixPublisher.exe" publish -personalAccessToken ${{ secrets.MARKETPLACE_PAT }} -payload .\o\DocGPT.vsix -publishManifest .\DocGpt.Vsix\publishmanifest.json -ignoreWarnings VsixPub0023
+
+        # uses: cezarypiatek/VsixPublisherAction@1.1
+        # with:
+        #   extension-file: .\o\DocGPT.vsix
+        #   publish-manifest-file: .\DocGpt.Vsix\publishmanifest.json
+        #   personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
+
 
   publish-gh-release:
     needs: build-and-test
@@ -80,5 +84,5 @@ jobs:
       - name: Upload Release Asset
         run: |
           gh release upload "v${{ env.EXTENSION_VERSION }}" \
-          --file ./o/DocGPT.vsix#Installer \
+          ./o/DocGPT.vsix#Installer \
           --clobber
