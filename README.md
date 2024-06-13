@@ -1,4 +1,10 @@
-﻿# Doc GPT
+﻿
+# Doc GPT
+
+| [![Repo health indicator](https://img.shields.io/github/actions/workflow/status/bc3tech/docgpt/build-and-test.yml?style=for-the-badge)](https://github.com/bc3tech/docgpt/actions/workflows/build-and-test.yml) | ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/bc3tech/docgpt/main?style=for-the-badge) |
+|---:|:---|
+| [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/bc3tech.net-bc3tech-docgpt?style=for-the-badge&logo=visualstudioappcenter&label=Latest%20Version)](https://marketplace.visualstudio.com/items?itemName=bc3tech.net-bc3tech-docgpt) | ![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
+| ![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/bc3tech.net-bc3tech-docgpt?style=for-the-badge) | ![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/bc3tech.net-bc3tech-docgpt?style=for-the-badge)
 
 A Visual Studio extension to quickly and easily document your code using LLMs.
 
@@ -7,6 +13,7 @@ A Visual Studio extension to quickly and easily document your code using LLMs.
 - Install the extension **free** from [the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=bc3tech.net-bc3tech-docgpt) or from within Visual Studio's extension manager
 
 ## Configuration
+
 - Set up the endpoint for your OpenAI model in the extension's settings
   ![VS Options panel for Doc GPT](docs/img/options_panel.png)
 

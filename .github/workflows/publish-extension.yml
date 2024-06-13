@@ -6,52 +6,74 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  EXTENSION_VERSION: 1.0.${{ github.run_number }}
-
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yml
+    secrets: inherit
 
   publish-to-marketplace:
     needs: build-and-test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    env:
+      EXTENSION_VERSION: ${{ needs.build-and-test.outputs.extVersion }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+          sparse-checkout: |
+            DocGpt.Vsix/publishmanifest.json
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: DocGPT.vsix
-          path: ./DocGPT.vsix
+          name: DocGPT-signed.vsix
+          path: .\o
 
       - name: Publish to marketplace
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
-          extension-file: ./DocGPT.vsix
-          publish-manifest-file: ./DocGpt.Vsix/publishmanifest.json
+          extension-file: .\o\DocGPT.vsix
+          publish-manifest-file: .\DocGpt.Vsix\publishmanifest.json
           personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
 
-  publish-release:
+
+  publish-gh-release:
     needs: build-and-test
     runs-on: ubuntu-latest
     permissions: write-all
+    env:
+      EXTENSION_VERSION: ${{ needs.build-and-test.outputs.extVersion }}
+      GH_TOKEN: ${{ github.token }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+          sparse-checkout: |
+            README.md
+
+      - name: Create tag
+        run: |
+          git -c user.name="GitHub Actions" -c user.email="actions@github.com" tag "v${{ env.EXTENSION_VERSION }}" "${{ github.sha }}"
+          git push --tags origin
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: DocGPT.vsix
-          path: ./DocGPT.vsix
+          name: DocGPT-signed.vsix
+          path: ./o
 
       - name: Create Release
         run: |
-          gh release create --target "${{ github.sha }}" \
-          --title "v${{ env.EXTENSION_VERSION }}" \
-          --generate-notes
+          gh release create "v${{ env.EXTENSION_VERSION }}" \
+          --generate-notes \
           --draft
 
       - name: Upload Release Asset
         run: |
           gh release upload "v${{ env.EXTENSION_VERSION }}" \
-          --file ./DocGPT.vsix#Installer \
+          ./o/DocGPT.vsix#Installer \
           --clobber

@@ -6,9 +6,36 @@ on:
       - main
   workflow_dispatch:
   workflow_call:
+    outputs:
+      extVersion:
+        value: ${{ jobs.package-extension.outputs.extVersion }}
+
+env:
+  EXTENSION_VERSION: 1.0.${{ github.run_number }}
+
 jobs:
-  build-and-test:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.x"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Run unit tests
+        run: dotnet test ./DocGpt.Test/DocGpt.Test.csproj --configuration Release
+
+  package-extension:
+    # VS extension packaging requires netfx, so have to run it on Windows
     runs-on: windows-latest
+    outputs:
+      extVersion: ${{ env.EXTENSION_VERSION }}
 
     steps:
       - name: Setup MSBuild for NetFX
@@ -16,27 +43,69 @@ jobs:
         with:
           vs-version: 17.0
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
-      
-      - name: Install sign tool
-        run: dotnet tool install --tool-path ./sign sign
-
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           show-progress: false
 
+      - name: Bump version
+        run: |
+          # Use PowerShell to update the version in the VSIX manifest
+          $xml = [xml](Get-Content -Path .\DocGpt.Vsix\source.extension.vsixmanifest)
+          $identityNode = $xml.PackageManifest.Metadata.Identity
+          $identityNode.SetAttribute('Version', $env:EXTENSION_VERSION)
+          $xml.Save(".\DocGpt.Vsix\source.extension.vsixmanifest")
+
+          echo "extVersion=$env:EXTENSION_VERSION" >> "$env:GITHUB_OUTPUT"
+
       - name: Restore NuGet packages
-        run: nuget restore ./DocGpt.sln
+        run: nuget restore .\DocGpt.sln
 
-      - name: Run unit tests
-        run: dotnet test ./DocGpt.Test/DocGpt.Test.csproj --configuration Release
-      
       - name: Build Extension
-        run: msbuild ./DocGpt.sln -p:Configuration=Release -t:Rebuild
+        run: msbuild .\DocGpt.sln -p:Configuration=Release
 
+      - name: Store unsigned artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DocGPT-unsigned.vsix
+          path: DocGpt.Vsix\bin\Release\DocGPT.vsix
+          retention-days: 1
+
+  sign-extension:
+    needs: package-extension
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+          sparse-checkout: |
+            lib/linux
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DocGPT-unsigned.vsix
+          path: ./o
+
+      # TODO: Switch from prerelease when they ship a release version
       - name: Sign Extension
-        run: lib\win\openvsixsigntool.exe sign -t "http://timestamp.digicert.com" ".\DocGpt.Vsix\bin\Release\DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
+        run: |
+          dotnet tool install --tool-path signer sign --prerelease
+
+          ./signer/sign code azure-key-vault `
+            -t "http://timestamp.digicert.com" "./o/DocGPT.vsix" `
+            -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" `
+            -kvt "${{ secrets.AZURE_TENANT_ID }}" `
+            -kvi "${{ secrets.AZURE_CLIENT_ID }}" `
+            -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" `
+            -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}" `
+            -d "DocGPT CodeSign Certificate" `
+            -u "https://bc3.tech/docgpt"
+
+      - name: Publish signed artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DocGPT-signed.vsix
+          path: ./o/DocGPT.vsix
