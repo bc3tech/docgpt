@@ -51,7 +51,8 @@ jobs:
           $identityNode.SetAttribute('Version', $env:EXTENSION_VERSION)
           $xml.Save(".\DocGpt.Vsix\source.extension.vsixmanifest")
 
-          echo "extVersion=$env:EXTENSION_VERSION" >> "$GITHUB_OUTPUT"
+          echo "extVersion=$env:EXTENSION_VERSION"
+          echo "extVersion=$env:EXTENSION_VERSION" >> "$env:GITHUB_OUTPUT"
 
       - name: Restore NuGet packages
         run: nuget restore .\DocGpt.sln
