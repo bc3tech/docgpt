@@ -9,7 +9,7 @@
         <GettingStartedGuide>README.md</GettingStartedGuide>
         <Icon>icon.jpg</Icon>
         <PreviewImage>demo.gif</PreviewImage>
-        <Tags>dotnet, gpt, llm, ai, xmldoc, xml, documentation, openai, azure</Tags>
+        <Tags>dotnet;gpt;llm;ai;xmldoc;xml;documentation;openai;azure</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Version="[17.0, 18.0)" Id="Microsoft.VisualStudio.Community">
