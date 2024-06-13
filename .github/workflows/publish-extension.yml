@@ -56,6 +56,8 @@ jobs:
 
       - name: Create tag
         run: |
+          echo "Version: ${{ env.EXTENSION_VERSION }}"
+          
           git -c user.name="GitHub Actions" -c user.email="actions@github.com" tag "v${{ env.EXTENSION_VERSION }}" "${{ github.sha }}"
           git push --tags origin
 
@@ -67,8 +69,7 @@ jobs:
 
       - name: Create Release
         run: |
-          gh release create --target "${{ github.sha }}" \
-          --title "v${{ env.EXTENSION_VERSION }}" \
+          gh release create "v${{ env.EXTENSION_VERSION }}" \
           --generate-notes
           --draft
 
