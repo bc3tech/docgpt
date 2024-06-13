@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
   workflow_call:
+    outputs:
+      extVersion:
+        value: ${{ jobs.package-extension.outputs.extVersion }}
 
 env:
   EXTENSION_VERSION: 1.0.${{ github.run_number }}
@@ -31,6 +34,8 @@ jobs:
   package-extension:
     # VS extension packaging requires netfx, so have to run it on Windows
     runs-on: windows-latest
+    outputs:
+      extVersion: ${{ env.EXTENSION_VERSION }}
 
     steps:
       - name: Setup MSBuild for NetFX

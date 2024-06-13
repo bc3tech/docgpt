@@ -31,6 +31,10 @@ jobs:
           name: DocGPT-signed.vsix
           path: .\o
 
+      - name: Show manifest
+        run: |
+          cat DocGpt.Vsix/publishmanifest.json
+          
       - name: Publish to marketplace
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
@@ -57,7 +61,7 @@ jobs:
       - name: Create tag
         run: |
           echo "Version: ${{ env.EXTENSION_VERSION }}"
-          
+
           git -c user.name="GitHub Actions" -c user.email="actions@github.com" tag "v${{ env.EXTENSION_VERSION }}" "${{ github.sha }}"
           git push --tags origin
 
@@ -70,7 +74,7 @@ jobs:
       - name: Create Release
         run: |
           gh release create "v${{ env.EXTENSION_VERSION }}" \
-          --generate-notes
+          --generate-notes \
           --draft
 
       - name: Upload Release Asset
