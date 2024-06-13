@@ -51,7 +51,7 @@ jobs:
           $identityNode.SetAttribute('Version', $env:EXTENSION_VERSION)
           $xml.Save(".\DocGpt.Vsix\source.extension.vsixmanifest")
 
-          echo "extVersion::$env:EXTENSION_VERSION" >> "$GITHUB_OUTPUT"
+          echo "extVersion=$env:EXTENSION_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Restore NuGet packages
         run: nuget restore .\DocGpt.sln
@@ -73,18 +73,27 @@ jobs:
         uses: actions/checkout@v4
         with:
           show-progress: false
+          sparse-checkout: |
+            lib/linux
 
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: DocGPT-unsigned.vsix
-          path: ./DocGPT.vsix
+          path: ./o
 
       - name: Sign Extension
-        run: ./lib/linux/OpenVsixSignTool sign -t "http://timestamp.digicert.com" "./DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
+        run: |
+          ls
+          echo ---
+          ls lib
+          echo ---
+          ls lib/linux
+          echo ---
+          ./lib/linux/OpenVsixSignTool sign -t "http://timestamp.digicert.com" "./o/DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
 
       - name: Publish signed artifact
         uses: actions/upload-artifact@v4
         with:
           name: DocGPT-signed.vsix
-          path: DocGpt.Vsix\bin\Release\DocGPT.vsix
+          path: ./o/DocGPT.vsix

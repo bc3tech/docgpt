@@ -13,22 +13,29 @@ jobs:
 
   publish-to-marketplace:
     needs: build-and-test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
         EXTENSION_VERSION: ${{ needs.build-and-test.outputs.extVersion }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+          sparse-checkout: |
+            DocGpt.Vsix/publishmanifest.json
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: DocGPT-signed.vsix
-          path: ./DocGPT.vsix
+          path: .\o
 
       - name: Publish to marketplace
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
-          extension-file: ./DocGPT.vsix
-          publish-manifest-file: ./DocGpt.Vsix/publishmanifest.json
+          extension-file: .\o\DocGPT.vsix
+          publish-manifest-file: .\DocGpt.Vsix\publishmanifest.json
           personal-access-code: ${{ secrets.MARKETPLACE_PAT }}
 
   publish-gh-release:
@@ -37,13 +44,14 @@ jobs:
     permissions: write-all
     env:
         EXTENSION_VERSION: ${{ needs.build-and-test.outputs.extVersion }}
-        
+        GH_TOKEN: ${{ github.token }}
+
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: DocGPT.vsix
-          path: ./DocGPT.vsix
+          name: DocGPT-signed.vsix
+          path: ./o
 
       - name: Create Release
         run: |
@@ -55,5 +63,5 @@ jobs:
       - name: Upload Release Asset
         run: |
           gh release upload "v${{ env.EXTENSION_VERSION }}" \
-          --file ./DocGPT.vsix#Installer \
+          --file ./o/DocGPT.vsix#Installer \
           --clobber
