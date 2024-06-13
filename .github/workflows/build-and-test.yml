@@ -56,7 +56,6 @@ jobs:
           $identityNode.SetAttribute('Version', $env:EXTENSION_VERSION)
           $xml.Save(".\DocGpt.Vsix\source.extension.vsixmanifest")
 
-          echo "extVersion=$env:EXTENSION_VERSION"
           echo "extVersion=$env:EXTENSION_VERSION" >> "$env:GITHUB_OUTPUT"
 
       - name: Restore NuGet packages
@@ -71,10 +70,10 @@ jobs:
           name: DocGPT-unsigned.vsix
           path: DocGpt.Vsix\bin\Release\DocGPT.vsix
           retention-days: 1
-          
+
   sign-extension:
     needs: package-extension
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
@@ -90,15 +89,20 @@ jobs:
           name: DocGPT-unsigned.vsix
           path: ./o
 
+      # TODO: Switch from prerelease when they ship a release version
       - name: Sign Extension
         run: |
-          ls
-          echo ---
-          ls lib
-          echo ---
-          ls lib/linux
-          echo ---
-          ./lib/linux/OpenVsixSignTool sign -t "http://timestamp.digicert.com" "./o/DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
+          dotnet tool install --tool-path signer sign --prerelease
+
+          ./signer/sign code azure-key-vault `
+            -t "http://timestamp.digicert.com" "./o/DocGPT.vsix" `
+            -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" `
+            -kvt "${{ secrets.AZURE_TENANT_ID }}" `
+            -kvi "${{ secrets.AZURE_CLIENT_ID }}" `
+            -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" `
+            -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}" `
+            -d "DocGPT CodeSign Certificate" `
+            -u "https://bc3.tech/docgpt"
 
       - name: Publish signed artifact
         uses: actions/upload-artifact@v4
