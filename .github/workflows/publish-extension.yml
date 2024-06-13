@@ -35,7 +35,9 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     permissions: write-all
-
+    env:
+        EXTENSION_VERSION: ${{ needs.build-and-test.outputs.extVersion }}
+        
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
