@@ -70,6 +70,8 @@ jobs:
         with:
           name: DocGPT-unsigned.vsix
           path: DocGpt.Vsix\bin\Release\DocGPT.vsix
+          retention-days: 1
+          
   sign-extension:
     needs: package-extension
     runs-on: ubuntu-latest
