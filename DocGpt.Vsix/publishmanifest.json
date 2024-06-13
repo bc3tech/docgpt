@@ -2,7 +2,18 @@
   "$schema": "http://json.schemastore.org/vsix-publish",
   "categories": ["coding", "documentation", "other"],
   "identity": {
-    "internalName": "net-bc3tech-docgpt"
+    "internalName": "net-bc3tech-docgpt",
+    "tags": [
+      "dotnet",
+      "gpt",
+      "llm",
+      "ai",
+      "xmldoc",
+      "xml",
+      "documentation",
+      "openai",
+      "azure"
+    ]
   },
   "overview": "../README.md",
   "priceCategory": "free",
