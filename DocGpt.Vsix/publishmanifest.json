@@ -4,15 +4,13 @@
   "identity": {
     "internalName": "net-bc3tech-docgpt",
     "tags": [
-      "dotnet",
       "gpt",
       "llm",
       "ai",
       "xmldoc",
       "xml",
       "documentation",
-      "openai",
-      "azure"
+      "openai"
     ]
   },
   "overview": "../README.md",
