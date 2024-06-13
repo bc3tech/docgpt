@@ -69,12 +69,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: DocGPT-unsigned.vsix
-          path: ./DocGPT.vsix
-
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -82,6 +76,12 @@ jobs:
           sparse-checkout: |
             lib/linux/
 
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DocGPT-unsigned.vsix
+          path: ./DocGPT.vsix
+          
       - name: Sign Extension
         run: ./lib/linux/OpenVsixSignTool sign -t "http://timestamp.digicert.com" "./DocGPT.vsix" -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" -kvt "${{ secrets.AZURE_TENANT_ID }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}"
 
