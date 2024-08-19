@@ -91,16 +91,22 @@ jobs:
 
       # TODO: Switch from prerelease when they ship a release version
       - name: Sign Extension
+        env:
+          kv_name: ${{secrets.AZURE_KEYVAULT_NAME}}
+          kv_tenant: ${{ secrets.AZURE_TENANT_ID }}
+          kv_client: ${{ secrets.AZURE_CLIENT_ID }}
+          kv_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          kv_cert: ${{ secrets.SIGNING_CERTIFICATE_NAME }}
         run: |
           dotnet tool install --tool-path signer sign --prerelease
 
           ./signer/sign code azure-key-vault `
             -t "http://timestamp.digicert.com" "./o/DocGPT.vsix" `
-            -kvu "https://${{ secrets.AZURE_KEYVAULT_NAME }}.vault.azure.net" `
-            -kvt "${{ secrets.AZURE_TENANT_ID }}" `
-            -kvi "${{ secrets.AZURE_CLIENT_ID }}" `
-            -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" `
-            -kvc "${{ secrets.SIGNING_CERTIFICATE_NAME }}" `
+            -kvu "https://${kv_name}.vault.azure.net" `
+            -kvt "${kv_tenant}" `
+            -kvi "${kv_client}" `
+            -kvs "${kv_secret}" `
+            -kvc "${kv_cert}" `
             -d "DocGPT CodeSign Certificate" `
             -u "https://bc3.tech/docgpt"
 
