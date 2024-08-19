@@ -58,11 +58,11 @@ jobs:
 
           echo "extVersion=$env:EXTENSION_VERSION" >> "$env:GITHUB_OUTPUT"
 
-      - name: Restore NuGet packages
-        run: nuget restore .\DocGpt.sln
+#      - name: Restore NuGet packages
+#        run: nuget restore .\DocGpt.sln
 
       - name: Build Extension
-        run: msbuild .\DocGpt.sln -p:Configuration=Release
+        run: msbuild .\DocGpt.sln /p:Configuration=Release /t:Restore;Build
 
       - name: Store unsigned artifact
         uses: actions/upload-artifact@v4
@@ -101,15 +101,16 @@ jobs:
         run: |
           dotnet tool install --tool-path signer sign --prerelease
 
-          ./signer/sign code azure-key-vault `
-            -t "http://timestamp.digicert.com" "./o/DocGPT.vsix" `
-            -kvu "https://${kv_name}.vault.azure.net" `
-            -kvt "${kv_tenant}" `
-            -kvi "${kv_client}" `
-            -kvs "${kv_secret}" `
-            -kvc "${kv_cert}" `
-            -d "DocGPT CodeSign Certificate" `
-            -u "https://bc3.tech/docgpt"
+          ./signer/sign code azure-key-vault \
+            "./o/DocGPT.vsix" \
+            -kvu "https://${kv_name}.vault.azure.net" \
+            -kvc "${kv_cert}" \
+            -d "DocGPT CodeSign Certificate" \
+            -u "https://bc3.tech/docgpt" \
+            -t "http://timestamp.digicert.com"
+#            -kvt "${kv_tenant}" \
+#            -kvi "${kv_client}" \
+#            -kvs "${kv_secret}" \
 
       - name: Publish signed artifact
         uses: actions/upload-artifact@v4
