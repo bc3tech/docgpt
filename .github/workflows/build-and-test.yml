@@ -91,6 +91,7 @@ jobs:
 
       # TODO: Switch from prerelease when they ship a release version
       - name: Sign Extension
+        shell: bash
         env:
           kv_name: ${{secrets.AZURE_KEYVAULT_NAME}}
           kv_tenant: ${{ secrets.AZURE_TENANT_ID }}
