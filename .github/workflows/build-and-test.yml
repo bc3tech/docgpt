@@ -58,11 +58,11 @@ jobs:
 
           echo "extVersion=$env:EXTENSION_VERSION" >> "$env:GITHUB_OUTPUT"
 
-      - name: Restore NuGet packages
-        run: nuget restore .\DocGpt.sln
+#      - name: Restore NuGet packages
+#        run: nuget restore .\DocGpt.sln
 
       - name: Build Extension
-        run: msbuild .\DocGpt.sln -p:Configuration=Release
+        run: msbuild .\DocGpt.sln /p:Configuration=Release /t:"Restore;Build"
 
       - name: Store unsigned artifact
         uses: actions/upload-artifact@v4
@@ -91,6 +91,7 @@ jobs:
 
       # TODO: Switch from prerelease when they ship a release version
       - name: Sign Extension
+        shell: bash
         env:
           kv_name: ${{secrets.AZURE_KEYVAULT_NAME}}
           kv_tenant: ${{ secrets.AZURE_TENANT_ID }}
@@ -98,17 +99,18 @@ jobs:
           kv_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           kv_cert: ${{ secrets.SIGNING_CERTIFICATE_NAME }}
         run: |
-          dotnet tool install --tool-path signer sign --prerelease
+          dotnet tool install --tool-path signer sign --version 0.9.1-beta.24325.5
 
-          ./signer/sign code azure-key-vault `
-            -t "http://timestamp.digicert.com" "./o/DocGPT.vsix" `
-            -kvu "https://${kv_name}.vault.azure.net" `
-            -kvt "${kv_tenant}" `
-            -kvi "${kv_client}" `
-            -kvs "${kv_secret}" `
-            -kvc "${kv_cert}" `
-            -d "DocGPT CodeSign Certificate" `
-            -u "https://bc3.tech/docgpt"
+          ./signer/sign code azure-key-vault \
+            "./o/DocGPT.vsix" \
+            -kvu "https://${kv_name}.vault.azure.net" \
+            -kvt "${kv_tenant}" \
+            -kvi "${kv_client}" \
+            -kvs "${kv_secret}" \
+            -kvc "${kv_cert}" \
+            -d "DocGPT CodeSign Certificate" \
+            -u "https://bc3.tech/docgpt" \
+            -t "http://timestamp.digicert.com"
 
       - name: Publish signed artifact
         uses: actions/upload-artifact@v4
