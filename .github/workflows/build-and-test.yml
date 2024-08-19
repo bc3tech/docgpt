@@ -99,18 +99,18 @@ jobs:
           kv_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           kv_cert: ${{ secrets.SIGNING_CERTIFICATE_NAME }}
         run: |
-          dotnet tool install --tool-path signer sign --prerelease
+          dotnet tool install --tool-path signer sign ----version 0.9.1-beta.24325.5
 
           ./signer/sign code azure-key-vault \
             "./o/DocGPT.vsix" \
             -kvu "https://${kv_name}.vault.azure.net" \
+            -kvt "${kv_tenant}" \
+            -kvi "${kv_client}" \
+            -kvs "${kv_secret}" \
             -kvc "${kv_cert}" \
             -d "DocGPT CodeSign Certificate" \
             -u "https://bc3.tech/docgpt" \
             -t "http://timestamp.digicert.com"
-#            -kvt "${kv_tenant}" \
-#            -kvi "${kv_client}" \
-#            -kvs "${kv_secret}" \
 
       - name: Publish signed artifact
         uses: actions/upload-artifact@v4
