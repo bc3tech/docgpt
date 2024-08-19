@@ -99,7 +99,7 @@ jobs:
           kv_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           kv_cert: ${{ secrets.SIGNING_CERTIFICATE_NAME }}
         run: |
-          dotnet tool install --tool-path signer sign ----version 0.9.1-beta.24325.5
+          dotnet tool install --tool-path signer sign --version 0.9.1-beta.24325.5
 
           ./signer/sign code azure-key-vault \
             "./o/DocGPT.vsix" \
