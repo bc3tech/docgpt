@@ -62,7 +62,7 @@ jobs:
 #        run: nuget restore .\DocGpt.sln
 
       - name: Build Extension
-        run: msbuild .\DocGpt.sln /p:Configuration=Release /t:Restore;Build
+        run: msbuild .\DocGpt.sln /p:Configuration=Release /t:"Restore;Build"
 
       - name: Store unsigned artifact
         uses: actions/upload-artifact@v4
