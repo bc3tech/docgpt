@@ -12,6 +12,9 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
+    using OpenAI;
+    using OpenAI.Chat;
+
     using static Helpers;
 
     /// <summary>
@@ -62,15 +65,12 @@
 
             try
             {
-                OpenAIClient client = DocGptOptions.Instance.GetClient();
+                var client = DocGptOptions.Instance.GetClient();
 
-                var completionOptions = new ChatCompletionsOptions();
-                if (!string.IsNullOrWhiteSpace(DocGptOptions.Instance.ModelDeploymentName))
+                try
                 {
-                    completionOptions.DeploymentName = DocGptOptions.Instance.ModelDeploymentName;
-                }
-
-                completionOptions.Messages.Add(new ChatRequestUserMessage($@"You are to take the C# code below and create a valid XML Documentation summary block for it according to .NET specifications. Use the following steps to determine what you compute for the answer:
+                    var completion = await client.CompleteChatAsync([
+                        new UserChatMessage($@"You are to take the C# code below and create a valid XML Documentation summary block for it according to .NET specifications. Use the following steps to determine what you compute for the answer:
 
 1. If the given code is not a complete C# type or member declaration, stop computing and return nothing.
 2. If the declaration is a variable or field, your summary should attempt to discern what the variable may mean based on its name and - if assigned - its value. Don't include the ""gets or sets"" verbiage.
@@ -80,12 +80,9 @@
 {code}
 ```
 
-You are to give back only the XML documentation wrapped in a code block (```), do not respond with any other text."));
-
-                try
-                {
-                    Azure.Response<ChatCompletions> completion = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
-                    var comment = completion.Value.Choices[0].Message.Content;
+You are to give back only the XML documentation wrapped in a code block (```), do not respond with any other text.")
+                        ]);
+                    var comment = completion.Value.Content[0].Text;
                     ExtractXmlDocComment(ref comment);
 
                     SyntaxTriviaList commentTrivia = CreateTrivia(node, comment);

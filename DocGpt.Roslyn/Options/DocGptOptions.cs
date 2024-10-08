@@ -1,8 +1,12 @@
 ﻿namespace DocGpt.Options
 {
     using System;
+    using System.ClientModel;
 
     using Azure.AI.OpenAI;
+
+    using OpenAI;
+    using OpenAI.Chat;
 
     /// <summary>
     /// Represents the configuration options for an OpenAI or Azure-based OpenAI service.
@@ -47,30 +51,26 @@
         }
 
         /// <summary>
-        /// Gets or sets the OpenAI or Azure OpenAI API model or deployment name.
+        /// Gets or sets the OpenAI model or Azure OpenAI deployment name.
         /// </summary>
         /// <value>
-        /// The OpenAI or Azure OpenAI API model or deployment name.
+        /// The OpenAI model or Azure OpenAI deployment name.
         /// </value>
         public string ModelDeploymentName { get; set; }
 
-        private OpenAIClient _client;
+        private ChatClient? _client;
         private string _apiKey;
-        private Uri _endpoint = new Uri("https://api.openai.com");
+        private Uri _endpoint = new("https://api.openai.com");
 
         /// <summary>
         /// Gets an instance of the OpenAIClient. If the client instance is null, it creates a new instance 
         /// based on whether the host endpoint ends with "azure.com" or not, using the provided API key.
         /// </summary>
-        public OpenAIClient GetClient()
+        public ChatClient GetClient()
         {
-            if (_client is null)
-            {
-                _client =
-                    _endpoint.Host.EndsWith("azure.com", StringComparison.OrdinalIgnoreCase)
-                    ? new OpenAIClient(_endpoint ?? throw new ArgumentNullException(nameof(this.Endpoint)), new Azure.AzureKeyCredential(_apiKey ?? throw new ArgumentNullException(nameof(this.ApiKey))))
-                    : new OpenAIClient(_apiKey ?? throw new ArgumentNullException(nameof(this.ApiKey)));
-            }
+            _client ??= _endpoint.Host.EndsWith("azure.com", StringComparison.OrdinalIgnoreCase)
+                ? new AzureOpenAIClient(_endpoint ?? throw new ArgumentNullException(nameof(this.Endpoint)), new ApiKeyCredential(_apiKey ?? throw new ArgumentNullException(nameof(this.ApiKey)))).GetChatClient(this.ModelDeploymentName)
+                : new OpenAIClient(_apiKey ?? throw new ArgumentNullException(nameof(this.ApiKey))).GetChatClient(this.ModelDeploymentName);
 
             return _client;
         }
