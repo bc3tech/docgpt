@@ -1,7 +1,5 @@
 ﻿namespace DocGpt.Test;
 
-using System.Threading.Tasks;
-
 using Azure;
 
 using DocGpt.Options;
@@ -10,6 +8,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using System.Threading.Tasks;
 
 [TestClass]
 internal static class GptSetup

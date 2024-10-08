@@ -1,11 +1,11 @@
 ﻿namespace DocGpt.Test;
 
-using System.Threading.Tasks;
-
 using DocGpt.Options;
 
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using System.Threading.Tasks;
 
 using VerifyCS = CSharpAnalyzerVerifier<DocGptAnalyzer>;
 
