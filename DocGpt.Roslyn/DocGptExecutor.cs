@@ -91,7 +91,7 @@ You are to give back only the XML documentation wrapped in a code block (```), d
                 }
                 catch (Exception e)
                 {
-                    if (!(e is TaskCanceledException) && !(e is OperationCanceledException))
+                    if (e is not TaskCanceledException and not OperationCanceledException)
                     {
                         System.Diagnostics.Debugger.Break();
                     }
@@ -145,7 +145,7 @@ You are to give back only the XML documentation wrapped in a code block (```), d
 
             if (IsConstantLiteral(node, out _))
             {
-                return !(DocGptOptions.Instance.UseValueForLiteralConstants is true);
+                return DocGptOptions.Instance.UseValueForLiteralConstants is not true;
             }
 
             return true;
