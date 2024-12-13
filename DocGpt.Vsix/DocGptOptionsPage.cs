@@ -1,12 +1,12 @@
 ﻿namespace DocGpt.Vsix
 {
-    using System;
-    using System.ComponentModel;
-    using System.Runtime.InteropServices;
-
     using DocGpt.Options;
 
     using Microsoft.VisualStudio.Shell;
+
+    using System;
+    using System.ComponentModel;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// The doc gpt options page.

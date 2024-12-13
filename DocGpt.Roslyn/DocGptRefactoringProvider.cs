@@ -1,46 +1,45 @@
-﻿namespace DocGpt
+﻿namespace DocGpt;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeRefactorings;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using System;
+using System.Composition;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+/// <summary>
+/// The doc gpt code fix provider.
+/// </summary>
+[ExportCodeRefactoringProvider(LanguageNames.CSharp, Name = nameof(DocGptRefactoringProvider)), Shared]
+public class DocGptRefactoringProvider : CodeRefactoringProvider
 {
-    using System;
-    using System.Composition;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeRefactorings;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-    /// <summary>
-    /// The doc gpt code fix provider.
-    /// </summary>
-    [ExportCodeRefactoringProvider(LanguageNames.CSharp, Name = nameof(DocGptRefactoringProvider)), Shared]
-    public class DocGptRefactoringProvider : CodeRefactoringProvider
+    public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
     {
-        public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
+        Document document = context.Document;
+        Microsoft.CodeAnalysis.Text.TextSpan textSpan = context.Span;
+        CancellationToken cancellationToken = context.CancellationToken;
+
+        SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+
+        // Find the node at the selection.
+        SyntaxNode node = root.FindNode(textSpan);
+        if (!DocGptExecutor.SupportedSyntaxes.Contains(node.Kind()))
         {
-            Document document = context.Document;
-            Microsoft.CodeAnalysis.Text.TextSpan textSpan = context.Span;
-            CancellationToken cancellationToken = context.CancellationToken;
-
-            SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
-            // Find the node at the selection.
-            SyntaxNode node = root.FindNode(textSpan);
-            if (!DocGptExecutor.SupportedSyntaxes.Contains(node.Kind()))
+            if (node.Parent?.Parent is FieldDeclarationSyntax)
             {
-                if (node.Parent?.Parent is FieldDeclarationSyntax)
-                {
-                    node = node.Parent.Parent;
-                }
-                else
-                {
-                    return;
-                }
+                node = node.Parent.Parent;
             }
-
-            // Register a code action that will invoke the fix.
-            context.RegisterRefactoring(new DocGptCodeAction(context.Document, node.GetLocation()));
+            else
+            {
+                return;
+            }
         }
+
+        // Register a code action that will invoke the fix.
+        context.RegisterRefactoring(new DocGptCodeAction(context.Document, node.GetLocation()));
     }
 }

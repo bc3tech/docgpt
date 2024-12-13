@@ -47,13 +47,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-		<VsixSignTool>$(NuGetPackageRoot)Microsoft.VSSDK.Vsixsigntool\16.2.29116.78\tools\vssdk\vsixsigntool.exe</VsixSignTool>
-		<VsixSignCommand>$(VsixSignTool) sign /f signing_cert.pfx /p "$(DOCGPT_SIGN_PASSWORD)" /fd sha256</VsixSignCommand>
-	</PropertyGroup>
-	<Target Name="SignVsix" AfterTargets="CreateVsixContainer" Condition="Exists('$(MSBuildProjectDirectory)\signing_cert.pfx') And '$(Configuration)' == 'Release' And '$(DOCGPT_SIGN_PASSWORD)' != ''">
-		<Message Text="Signing $(TargetVsixContainer)" Importance="high" />
-		<Exec Command="$(VsixSignCommand) $(MSBuildProjectDirectory)\$(TargetVsixContainer)" />
-	</Target>
+    <VsixSignTool>$(NuGetPackageRoot)Microsoft.VSSDK.Vsixsigntool\16.2.29116.78\tools\vssdk\vsixsigntool.exe</VsixSignTool>
+    <VsixSignCommand>$(VsixSignTool) sign /f signing_cert.pfx /p "$(DOCGPT_SIGN_PASSWORD)" /fd sha256</VsixSignCommand>
+  </PropertyGroup>
+  <Target Name="SignVsix" AfterTargets="CreateVsixContainer" Condition="Exists('$(MSBuildProjectDirectory)\signing_cert.pfx') And '$(Configuration)' == 'Release' And '$(DOCGPT_SIGN_PASSWORD)' != ''">
+    <Message Text="Signing $(TargetVsixContainer)" Importance="high" />
+    <Exec Command="$(VsixSignCommand) $(MSBuildProjectDirectory)\$(TargetVsixContainer)" />
+  </Target>
   <ItemGroup>
     <Compile Include="DocGptOptionsPage.cs">
       <SubType>Component</SubType>
@@ -92,12 +92,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI">
-      <Version>1.0.0-beta.17</Version>
+      <Version>2.1.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
-      <Version>17.11.40262</Version>
+      <Version>17.12.40392</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.11.435">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.12.2069">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

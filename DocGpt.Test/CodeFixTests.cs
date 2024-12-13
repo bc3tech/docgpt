@@ -1,16 +1,13 @@
 ﻿namespace DocGpt.Test;
-
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 using DocGpt.Options;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using VerifyCS = CSharpCodeFixVerifier<DocGptAnalyzer, DocGptCodeFixProvider>;
 
@@ -20,7 +17,7 @@ using VerifyCS = CSharpCodeFixVerifier<DocGptAnalyzer, DocGptCodeFixProvider>;
 [TestClass]
 public partial class CodeFixTests
 {
-    public TestContext TestContext { get; set; }
+    public required TestContext TestContext { get; set; }
 
     /// <summary>
     /// Analyzers the throws class decl.

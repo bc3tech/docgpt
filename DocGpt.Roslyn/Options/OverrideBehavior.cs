@@ -1,15 +1,14 @@
-﻿namespace DocGpt.Options
+﻿namespace DocGpt.Options;
+
+/// <summary />
+public enum OverrideBehavior
 {
     /// <summary />
-    public enum OverrideBehavior
-    {
-        /// <summary />
-        DoNotDocument,
+    DoNotDocument,
 
-        /// <summary />
-        UseInheritDoc,
+    /// <summary />
+    UseInheritDoc,
 
-        /// <summary />
-        GptSummarize
-    }
+    /// <summary />
+    GptSummarize
 }
